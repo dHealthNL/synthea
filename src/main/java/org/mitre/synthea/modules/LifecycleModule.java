@@ -70,7 +70,7 @@ public final class LifecycleModule extends Module {
   }
   
   private static SimpleYML loadNames() {
-    String filename = "names.yml";
+    String filename = Config.get("generate.demographics.names.default_file");
     try {
       String namesData = Utilities.readResource(filename);
       return new SimpleYML(namesData);

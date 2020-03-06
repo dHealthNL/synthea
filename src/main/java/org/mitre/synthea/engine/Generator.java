@@ -54,7 +54,6 @@ public class Generator {
   private boolean onlyDeadPatients;
   private boolean onlyVeterans;
   public TransitionMetrics metrics;
-  public static final String DEFAULT_STATE = "Massachusetts";
   private Exporter.ExporterRuntimeOptions exporterRuntimeOptions;
 
   /**
@@ -174,7 +173,7 @@ public class Generator {
     }
 
     if (options.state == null) {
-      options.state = DEFAULT_STATE;
+      options.state = Config.get("generate.demographics.state.default_state");
     }
     int stateIndex = Location.getIndex(options.state);
     if (Boolean.parseBoolean(Config.get("exporter.cdw.export"))) {

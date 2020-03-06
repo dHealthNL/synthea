@@ -1,0 +1,235 @@
+,id,name,address,city,state,zip,county,phone,type,ownership,emergency,quality,LAT,LON
+1,6020702,AMC,Meibergdreef 9,Amsterdam Zuidoost,NH,1105AZ,Ignore County,0123456789,Academisch ziekenhuis,Amsterdam UMC,Yes,5,52.2946098910698,4.9584547104020
+2,,Emma Kinderziekenhuis,Meibergdreef 9,Amsterdam,NH,1105AZ,Ignore County,0123456789,Kinderziekenhuis,Amsterdam UMC,Yes,5,52.2946098910698,4.9584547104020
+3,6020701,Vumc,de Boelelaan 1117,Amsterdam,NH,1081HV,Ignore County,0123456789,Academisch ziekenhuis,Amsterdam UMC,Yes,5,52.3341099704103,4.8655204098241
+4,6021101,Maastricht UMC+,P. Debijelaan 25,Maastricht,LI,6229HX,Ignore County,0123456789,Academisch ziekenhuis,Maastricht UMC+,Yes,5,50.8355287839890,5.7134357492935
+5,22220129,Medisch centrum Annadal,Brouwersweg 100,Maastricht,LI,6216EG,Ignore County,0123456789,Buitenpolikliniek,Maastricht UMC+,Yes,5,50.8463396901629,5.6695838972445
+7,22220129,Stadspoli West,Clavecymbelstraat 71A-77A,Maastricht,LI,6217CS,Ignore County,0123456789,Buitenpolikliniek,Maastricht UMC+,Yes,5,50.8593239430461,5.6675332056250
+8,6010859,Albert Schweitzer Ziekenhuis Dordwijk,A. Schweitzerplaats 25,Dordrecht,ZH,3318AT,Ignore County,0123456789,Algemeen ziekenhuis,Albert Schweitzer Ziekenhuis,Yes,5,51.7921649144690,4.6820291382003
+9,6010859,Albert Schweitzer Ziekenhuis Zwijndrecht,Langeweg 336,Zwijndrecht,ZH,3331LZ,Ignore County,0123456789,Algemeen ziekenhuis,Albert Schweitzer Ziekenhuis,Yes,5,51.8270897010695,4.6300000705288
+10,6010859,Albert Schweitzer Ziekenhuis Sliedrecht,Stationspark 400,Sliedrecht,ZH,3364DA,Ignore County,0123456789,Algemeen ziekenhuis,Albert Schweitzer Ziekenhuis,Yes,5,51.8286022086533,4.7772881966787
+11,6010859,Albert Schweitzer Ziekenhuis Buitenpoli GOED Ridderkerk,Jan Luykenstraat 8,Ridderkerk,ZH,2985BV,Ignore County,0123456789,Buitenpolikliniek,Albert Schweitzer Ziekenhuis,Yes,5,51.8662205670197,4.6028883205511
+12,6010535,Rijnstate Ziekenhuis,Wagnerlaan 55,Arnhem,GE,6815AD,Ignore County,0123456789,Algemeen ziekenhuis,Rijnstate Ziekenhuis,Yes,5,52.0007085632346,5.9106504051141
+13,6010535,Rijnstate Ziekenhuis Zevenaar,Hunneveldweg 14A,Zevenaar,GE,6903ZN,Ignore County,0123456789,Algemeen ziekenhuis,Rijnstate Ziekenhuis,Yes,5,51.9417958038334,6.0669713227480
+14,6010535,Rijnstate Polikliniek Arnhem-zuid,Marga Klompélaan 6,Arnhem,GE,6836BH,Ignore County,0123456789,Buitenpolikliniek,Rijnstate Ziekenhuis,Yes,5,51.9476370608492,5.8845482291203
+15,6010535,Rijnstate Ziekenhuis Velp,President Kennedylaan 100,Velp Gld,GE,6883AZ,Ignore County,0123456789,Buitenpolikliniek,Rijnstate Ziekenhuis,Yes,5,51.9863466734420,5.9764805226198
+16,6011033,Amphia Ziekenhuis Breda Molengracht,Molengracht 21,Breda,NB,4818CK,Ignore County,0123456789,Algemeen ziekenhuis,Amphia Ziekenhuis,Yes,5,51.5818553804550,4.7973251235106
+17,6011033,Amphia Ziekenhuis Breda Langendijk,Langendijk 75,Breda,NB,4819EV,Ignore County,0123456789,Algemeen ziekenhuis,Amphia Ziekenhuis,Yes,5,51.5744679962973,4.7621067739073
+18,6011033,Amphia Ziekenhuis Oosterhout,Pasteurlaan 9,Oosterhout,NB,4901DH,Ignore County,0123456789,Algemeen ziekenhuis,Amphia Ziekenhuis,Yes,5,51.6487463739850,4.8700164976665
+19,6011033,Amphia Ziekenhuis Etten-Leur,Trivium 76,Etten-Leur,NB,4873LP,Ignore County,0123456789,Buitenpolikliniek,Amphia Ziekenhuis,Yes,5,51.5712069109324,4.6640220629855
+20,6010209,Antonius Ziekenhuis Sneek,Bolswarderbaan 1,Sneek,FR,8601ZK,Ignore County,0123456789,Algemeen ziekenhuis,Antonius Zorggroep,Yes,5,53.0348143753810,5.6435703183029
+21,6010209,Antonius Ziekenhuis Emmeloord,Urkerweg 4,Emmeloord,FL,8303BX,Ignore County,0123456789,Buitenpolikliniek,Antonius Zorggroep,Yes,5,52.7023148536243,5.7328580844251
+22,6010209,Emmeloord Dokter Jansencentrum,Urkerweg 1,Emmeloord,FL,8303BX,Ignore County,0123456789,Buitenpolikliniek,Antonius Zorggroep,Yes,5,52.7023148536243,5.7328580844251
+23,6011117,Zuyderland Medisch Centrum Heerlen,H. Dunantstraat 5,Heerlen,LI,6419PC,Ignore County,0123456789,Algemeen ziekenhuis,Zuyderland Medisch Centrum,Yes,5,50.8686600180580,5.9768966718403
+24,6011117,Zuyderland Medisch Centrum Brunssum,Prins Hendriklaan 376,Brunssum,LI,6443AE,Ignore County,0123456789,Buitenpolikliniek,Zuyderland Medisch Centrum,Yes,5,50.9420152837240,5.9773432049410
+25,6011117,Zuyderland Medisch Centrum Kerkrade,Wijngracht 45,Kerkrade,LI,6461AL,Ignore County,0123456789,Buitenpolikliniek,Zuyderland Medisch Centrum,Yes,5,50.8665906397640,6.0611452489978
+26,6011114,Zuyderland Medisch Centrum Sittard-Geleen,Dr. H. van der Hoffplein 1,Sittard-Geleen,LI,6162BG,Ignore County,0123456789,Algemeen ziekenhuis,Zuyderland Medisch Centrum,Yes,5,50.9831890408980,5.8445982058790
+27,6011114,Zuyderland Medisch Centrum Buitenpoli De Egthe,De Egthe 1,Echt,LI,6101EX,Ignore County,0123456789,Buitenpolikliniek,Zuyderland Medisch Centrum,Yes,5,51.1052152290630,5.8738080388546
+28,6010753,BovenIJ Ziekenhuis,Statenjachtstraat 1,Amsterdam,NH,1034CS,Ignore County,0123456789,Algemeen ziekenhuis,BovenIJ Ziekenhuis,Yes,5,52.4045031594410,4.9211535324084
+29,6010518,Canisius-Wilhelmina Ziekenhuis,Weg door Jonkerbos 100,Nijmegen,GE,6532SZ,Ignore County,0123456789,Algemeen ziekenhuis,Canisius-Wilhelmina Ziekenhuis,Yes,5,51.8167856199581,5.8308108593465
+30,6010518,Canisius-Wilhelmina Ziekenhuis Waalsprong,Carbatinastraat 3,Nijmegen,GE,6515GM,Ignore County,0123456789,Buitenpolikliniek,Canisius-Wilhelmina Ziekenhuis,Yes,5,51.8814473904820,5.8465028631132
+31,6010518,Canisius-Wilhelmina Ziekenhuis Druten,Kerkeland 3,Druten,GE,6651KN,Ignore County,0123456789,Buitenpolikliniek,Canisius-Wilhelmina Ziekenhuis,Yes,5,51.8876384325877,5.6165506715353
+32,,Canisius-Wilhelmina Polikliniek Jonkerbosch,Burgemeester Daleslaan 27,Nijmegen,GE,6532CL,Ignore County,0123456789,Buitenpolikliniek,Canisius-Wilhelmina Ziekenhuis,Yes,5,51.8174947066573,5.8375259091541
+33,6011009,Catharina Ziekenhuis,Michelangelolaan 2,Eindhoven,NB,5623EJ,Ignore County,0123456789,Algemeen ziekenhuis,Catharina Ziekenhuis,Yes,5,51.4643802036061,5.4706578983555
+34,6010822,Alrijne Leiden,Houtlaan 55,Leiden,ZH,2334CK,Ignore County,0123456789,Algemeen ziekenhuis,Alrijne Zorggroep,Yes,5,52.1736987788640,4.4822239353826
+35,6010822,Alrijne Ziekenhuis Buitenlocatie  Katwijk,Randweg 47,Katwijk,ZH,2225PJ,Ignore County,0123456789,Buitenpolikliniek,Alrijne Zorggroep,Yes,5,52.2000880826295,4.4056903542991
+36,6010822,Alrijne Ziekenhuis Buitenlocatie Sassenheim,Jan van Brabantweg 33,Sassenheim,ZH,2171HE,Ignore County,0123456789,Buitenpolikliniek,Alrijne Zorggroep,Yes,5,52.2296941573901,4.5240678003254
+37,22220097,Alrijne Ziekenhuis Leiderdorp,Simon Smitweg 1,Leiderdorp,ZH,2353GA,Ignore County,0123456789,Algemeen ziekenhuis,Alrijne Zorggroep,Yes,5,52.1557895124981,4.5405954147922
+38,22220097,Alrijne Ziekenhuis Alphen aan den Rijn,Metoorlaan 4,Alphen a/d Rijn,ZH,2402WC,Ignore County,0123456789,Buitenpolikliniek,Alrijne Zorggroep,Yes,5,52.1437781470194,4.6625400268216
+39,6010618,Diakonessenhuis Utrecht,Bosboomstraat 1,Utrecht,UT,3582KE,Ignore County,0123456789,Algemeen ziekenhuis,Diakonessenhuis,Yes,5,52.0822023446480,5.1399284540165
+40,6010618,Diakonessenhuis Zeist,Jagersingel 1,Zeist,UT,3707JA,Ignore County,0123456789,Algemeen ziekenhuis,Diakonessenhuis,Yes,5,52.0905421429860,5.2607352626076
+41,6010618,Diakonessenhuis Buitenpolikliniek Doorn,Bergweg 2,Doorn,UT,3941RB,Ignore County,0123456789,Buitenpolikliniek,Diakonessenhuis,Yes,5,52.0356365922600,5.3515274902929
+42,6011026,Elkerliek Ziekenhuis Helmond,Wesselmanlaan 25,Helmond,NB,5707HA,Ignore County,0123456789,Algemeen ziekenhuis,Elkerliek Ziekenhuis,Yes,5,51.4819040321295,5.6442587057780
+43,6011026,Elkerliek Ziekenhuis Deurne,Dunantweg 16,Deurne,NB,5751CB,Ignore County,0123456789,Buitenpolikliniek,Elkerliek Ziekenhuis,Yes,5,51.4683326759315,5.7905018394291
+44,6011026,Elkerliek Ziekenhuis Gemert,Julianastraat 2,Gemert,NB,5421DB,Ignore County,0123456789,Buitenpolikliniek,Elkerliek Ziekenhuis,Yes,5,51.5545247526698,5.6854509773058
+45,,Elkerliek Ziekenhuis Polikliniek Asten,Floralaan 30,Asten,NB,5721CV,Ignore County,0123456789,Buitenpolikliniek,Elkerliek Ziekenhuis,Yes,5,51.4051645053913,5.7527558879134
+46,6020806,Erasmus Medisch Centrum,Dr. Molewaterplein 40,Rotterdam,ZH,3015GD,Ignore County,0123456789,Academisch ziekenhuis,Erasmus Medisch Centrum,Yes,5,51.9104896382305,4.4680501672931
+47,6020806,Erasmus Medisch Centrum Sophia kinderziekenhuis,Wytemaweg 80,Rotterdam,ZH,3015CN,Ignore County,0123456789,Kinderziekenhuis,Erasmus Medisch Centrum,Yes,5,51.9123701063600,4.4693556735076
+48,6020806,Erasmus Medisch Centrum Kanker Instituut,Groene hilledijk 301,Rotterdam,ZH,3075EA,Ignore County,0123456789,Algemeen ziekenhuis,Erasmus Medisch Centrum,Yes,5,51.8856528644578,4.5047232621840
+49,6010901,Admiraal De Ruyter Ziekenhuis Goes,'s-Gravenpolderseweg 114,Goes,ZE,4462RA,Ignore County,0123456789,Algemeen ziekenhuis,Admiraal De Ruyter Ziekenhuis,Yes,5,51.4862133662525,3.9046774058627
+50,6010901,Admiraal De Ruyter Ziekenhuis Middelburg Kalverstraat,Kalverstraat 1,Middelburg,ZE,4331LZ,Ignore County,0123456789,Buitenpolikliniek,Admiraal De Ruyter Ziekenhuis,Yes,5,51.4965834551893,3.6100414508704
+51,6010901,Admiraal De Ruyter Ziekenhuis Vlissingen,Koudekerkseweg 88,Vlissingen,ZE,4382EE,Ignore County,0123456789,Algemeen ziekenhuis,Admiraal De Ruyter Ziekenhuis,Yes,5,51.4515022277930,3.5655367673426
+52,6010901,Admiraal De Ruyter Ziekenhuis Zierikzee,Koning Gustaafweg 2,Zierikzee,ZE,4301NP,Ignore County,0123456789,Buitenpolikliniek,Admiraal De Ruyter Ziekenhuis,Yes,5,51.6564036846280,3.9283541761442
+53,6011202,Flevoziekenhuis,Hospitaalweg 1,Almere,FL,1315RA,Ignore County,0123456789,Algemeen ziekenhuis,Flevoziekenhuis,Yes,5,52.3692207350630,5.2233266426264
+55,6011021,Bravis Ziekenhuis Bergen op Zoom,Boerhaavelaan 25,Roosendaal,NB,4708AE,Ignore County,0123456789,Algemeen ziekenhuis,Bravis Ziekenhuis,Yes,5,51.5283593942845,4.4435188622289
+56,6011021,Bravis Ziekenhuis Oudenbosch Medisch Centrum,West-Vaardeke 11A,Oudenbosch,NB,4731MA,Ignore County,0123456789,Buitenpolikliniek,Bravis Ziekenhuis,Yes,5,51.5897319061795,4.5242356948985
+57,6011021,Bravis Ziekenhuis Polikliniek Etten-Leur,Schoonhout 215,Etten-Leur,NB,4872MC,Ignore County,0123456789,Buitenpolikliniek,Bravis Ziekenhuis,Yes,5,51.5739442353559,4.6520742633159
+59,6011001,Bravis Ziekenhuis Roosendaal,Boerhaaveplein 1,Bergen Op Zoom,NB,4624VT,Ignore County,0123456789,Algemeen ziekenhuis,Bravis Ziekenhuis,Yes,5,51.4878193467550,4.3149256481473
+60,6010536,Gelre Ziekenhuizen Zutphen,Den Elterweg 77,Zutphen,GE,7207AE,Ignore County,0123456789,Algemeen ziekenhuis,Gelre Ziekenhuizen,Yes,5,52.1236442830783,6.2171014841069
+61,6010536,Gelre Ziekenhuizen Apeldoorn,A. Schweitzerlaan 31,Apeldoorn,GE,7334DZ,Ignore County,0123456789,Algemeen ziekenhuis,Gelre Ziekenhuizen,Yes,5,52.1816068078730,5.9482871590747
+62,6010536,Gelre Ziekenhuizen Polikliniek Lochem,Zwiepseweg 105,Lochem,GE,7241GR,Ignore County,0123456789,Buitenpolikliniek,Gelre Ziekenhuizen,Yes,5,52.1554392280268,6.4231190552300
+63,6010536,Gelre Ziekenhuizen Polikliniek Epe,Willem Tellstraat 17,Epe,GE,8162ET,Ignore County,0123456789,Buitenpolikliniek,Gelre Ziekenhuizen,Yes,5,52.3493414972212,5.9821261859407
+64,6010536,Gelre Ziekenhuizen Polikliniek Dieren,Wilhelminaweg 80AA,Dieren,GE,6951BR,Ignore County,0123456789,Buitenpolikliniek,Gelre Ziekenhuizen,Yes,5,52.0513802215074,6.0985371003683
+65,,Gelre Ziekenhuis Polikliniek Doesburg,De Linie 3b,Doesburg,GE,6982AZ,Ignore County,0123456789,Buitenpolikliniek,Gelre Ziekenhuizen,Yes,5,52.0095493875405,6.1337503039411
+66,6010855,Groene Hart Ziekenhuis Bleulandlocatie,Bleulandweg 10,Gouda,ZH,2803HH,Ignore County,0123456789,Algemeen ziekenhuis,Groene Hart Ziekenhuis,Yes,5,52.0209134669291,4.7029783332171
+67,6010855,Groene Hart Ziekenhuis Polikliniek Zuidplas,Doortocht 40,Nieuwerkerk a/d IJssel,ZH,2914KA,Ignore County,0123456789,Buitenpolikliniek,Groene Hart Ziekenhuis,Yes,5,51.9664912915597,4.6173729001950
+68,6010855,Groene Hart Ziekenhuis Polikliniek Schoonhoven,Oranjeplaats 21,Schoonhoven,ZH,2871TL,Ignore County,0123456789,Buitenpolikliniek,Groene Hart Ziekenhuis,Yes,5,51.9459157120585,4.8470641490583
+69,,Groene Hart Ziekenhuis Bodegraven,Willem de Zwijgerstraat 9,Bodegraven,ZH,2411VT,Ignore County,0123456789,Buitenpolikliniek,Groene Hart Ziekenhuis,Yes,5,52.0884424378731,4.7496105033545
+71,6010862,HagaZiekenhuis Sportlaan,Sportlaan 600,'s-Gravenhage,ZH,2566MJ,Ignore County,0123456789,Algemeen ziekenhuis,Stichting Reinier Haga Groep,Yes,5,52.0808503409025,4.2622985262500
+72,6010862,HagaZiekenhuis Juliana Kinderziekenhuis,Els Borst-Eilersplein 275,'s-Gravenhage,ZH,2566AA,Ignore County,0123456789,Kinderziekenhuis,Stichting Reinier Haga Groep,Yes,5,52.0674133757117,4.2445532055276
+73,6010862,HagaZiekenhuis Zorgplein Westland,Zandeveltplein 3,’s-Gravenzande,ZH,2692AH,Ignore County,0123456789,Buitenpolikliniek,Stichting Reinier Haga Groep,Yes,5,52.0023842918071,4.1586517103022
+74,6010857,Reinier de Graaf Diaconessenhuis Voorburg,Fonteynenburghlaan 5,Voorburg,ZH,2275CX,Ignore County,0123456789,Algemeen ziekenhuis,Stichting Reinier Haga Groep,Yes,5,52.0615276107288,4.3518254439516
+75,6010857,Reinier de Graaf  Ypenburg,Kiekendiefstraat 17,'s-Gravenhage,ZH,2496RP,Ignore County,0123456789,Buitenpolikliniek,Stichting Reinier Haga Groep,Yes,5,52.0516305048208,4.3855404665669
+76,6010857,Reinier de Graaf Naaldwijk,Middelbroekweg 2a,Naaldwijk,ZH,2671ME,Ignore County,0123456789,Buitenpolikliniek,Stichting Reinier Haga Groep,Yes,5,51.9908812507675,4.2173169980056
+77,6010857,Reinier de Graaf Gasthuis,Reinier de Graafweg 5,Delft,ZH,2625AD,Ignore County,0123456789,Algemeen ziekenhuis,Stichting Reinier Haga Groep,Yes,5,51.9974623768289,4.3390140389468
+78,6010850,LangeLand Ziekenhuis,Toneellaan 1,Zoetermeer,ZH,2725NA,Ignore County,0123456789,Algemeen ziekenhuis,Stichting Reinier Haga Groep,Yes,5,52.0689151777370,4.4996568687888
+79,,Langeland Ziekenhuis Huidkliniek en Plastische chirurgie,Europaweg 151,Zoetermeer,ZH,2711ER,Ignore County,0123456789,Buitenpolikliniek,Stichting Reinier Haga Groep,Yes,5,52.0641562912655,4.4954439892419
+80,6010830,Havenziekenhuis,Haringvliet 2,Rotterdam,ZH,3011TD,Ignore County,0123456789,Havenziekenhuis,Havenpolikliniek,Yes,5,51.9199975859359,4.4964142061163
+81,6010830,Havenziekenhuis Locatie Buitenhaven,Haringvliet 72,Rotterdam,ZH,3011TG,Ignore County,0123456789,Buitenpolikliniek,Havenpolikliniek,Yes,5,51.9195261064364,4.4949817678608
+82,6010852,IJsselland Ziekenhuis,Prins Constantijnweg 2,Capelle a/d IJssel,ZH,2906ZC,Ignore County,0123456789,Algemeen ziekenhuis,IJsselland Ziekenhuis,Yes,5,51.9385816691260,4.5626892305912
+83,6010852,IJsselland Ziekenhuis Buitenpolikliniek Nesselande,Cypruslaan 410,Rotterdam,ZH,3059XA,Ignore County,0123456789,Buitenpolikliniek,IJsselland Ziekenhuis,Yes,5,51.9819860852522,4.5837224436661
+84,6010852,IJsselland Ziekenhuis Buitenpolikliniek Krimpen,Groenendaal 1,Krimpen a/d Ijssel,ZH,2922CJ,Ignore County,0123456789,Buitenpolikliniek,IJsselland Ziekenhuis,Yes,5,51.9203438447182,4.6009478130499
+85,6010831,Ikazia Ziekenhuis,Montessoriweg 1,Rotterdam,ZH,3083AN,Ignore County,0123456789,Algemeen ziekenhuis,Ikazia Ziekenhuis,Yes,5,51.8861270107637,4.4941241581768
+86,6010831,Ikazia Ziekenhuis Buitenpolikliniek Carnisselande,Middeldijkerplein 36,Barendrecht,ZH,2993DL,Ignore County,0123456789,Buitenpolikliniek,Ikazia Ziekenhuis,Yes,5,51.8483031376496,4.5010752163603
+87,,Ikazia Ziekenhuis Polikliniek Slikkerveer,Prinses Margrietstraat 42,Ridderkerk,ZH,2983EH,Ignore County,0123456789,Buitenpolikliniek,Ikazia Ziekenhuis,Yes,5,51.8784785803797,4.6050267469763
+88,6010420,Isala Zwolle,Dokter van Heesweg 2,Zwolle,OV,8025AB,Ignore County,0123456789,Algemeen ziekenhuis,Isala klinieken,Yes,5,52.5139826150582,6.1244533100776
+89,6010420,Isala Polikliniek Kampen,Engelenbergplantsoen 7,Kampen,OV,8266AB,Ignore County,0123456789,Buitenpolikliniek,Isala klinieken,Yes,5,52.5514538848450,5.9205397907071
+90,6010420,Isala Polikliniek Heerde,Groteweg 5,Wapenveld,GE,8191JS,Ignore County,0123456789,Buitenpolikliniek,Isala klinieken,Yes,5,52.4261212312265,6.0624486988420
+91,6010305,Isala Diaconessenhuis Meppel,Hoogeveenseweg 38,Meppel,DR,7943KA,Ignore County,0123456789,Algemeen ziekenhuis,Isala klinieken,Yes,5,52.6900506696227,6.2199640275475
+92,6010305,Isala Diaconessenhuis Steenwijk,Sluisweg 2,Steenwijk,OV,8332JC,Ignore County,0123456789,Buitenpolikliniek,Isala klinieken,Yes,5,52.7934405365711,6.1211138210403
+93,6011034,Jeroen Bosch Ziekenhuis Boxtel,Liduinahof 35,Boxtel,NB,5281AD,Ignore County,0123456789,Buitenpolikliniek,Jeroen Bosch Ziekenhuis,Yes,5,51.5930389450017,5.3265677540344
+94,6011034,Jeroen Bosch Ziekenhuis Zaltbommel,Kerkstraat 2,Zaltbommel,GE,5301EH,Ignore County,0123456789,Buitenpolikliniek,Jeroen Bosch Ziekenhuis,Yes,5,51.8134337172046,5.2505070329239
+95,6011034,Jeroen Bosch Ziekenhuis Rosmalen,De Hoef 90,Rosmalen,NB,5242CN,Ignore County,0123456789,Buitenpolikliniek,Jeroen Bosch Ziekenhuis,Yes,5,51.7116350456355,5.3639590645365
+96,6011034,Jeroen Bosch Ziekenhuis 's-Hertogenbosch,Henri Dunantstraat 1,'s-Hertogenbosch,NB,5223GZ,Ignore County,0123456789,Algemeen ziekenhuis,Jeroen Bosch Ziekenhuis,Yes,5,51.6847245696430,5.2772333930924
+97,,Sport Medisch Centrum Jeroen Bosch Ziekenhuis,Marathonloop 9,'s-Hertogenbosch,NB,5235AA,Ignore County,0123456789,Buitenpolikliniek,Jeroen Bosch Ziekenhuis,Yes,5,51.7221449957393,5.3159096321540
+99,,Jeroen Bosch Ziekenhuis Gamerschestraat,Gamerschestraat 32a,Zaltbommel,GE,5301AS,Ignore County,0123456789,Buitenpolikliniek,Jeroen Bosch Ziekenhuis,Yes,5,51.8133242942463,5.2459835393761
+100,6010756,Spaarne Gasthuis locatie Haarlem-Zuid,Boerhaavelaan 22,Haarlem,NH,2035RC,Ignore County,0123456789,Algemeen ziekenhuis,Spaarne Gasthuis,Yes,5,52.3675265235712,4.6511978795495
+101,6010756,Spaarne Gasthuis locatie Haarlem-Noord,Vondelweg 999,Haarlem,NH,2026BW,Ignore County,0123456789,Algemeen ziekenhuis,Spaarne Gasthuis,Yes,5,52.4224013328255,4.6508775107701
+102,6010754,Spaarne Gasthuis Hoofddorp,Spaarnepoort 1,Hoofddorp,NH,2134TM,Ignore County,0123456789,Algemeen ziekenhuis,Spaarne Gasthuis,Yes,5,52.3242794268895,4.6540215648810
+103,6010754,Spaarne Gasthuis  Heemstede,Händellaan 2,Heemstede,NH,2102CW,Ignore County,0123456789,Buitenpolikliniek,Spaarne Gasthuis,Yes,5,52.3547442145196,4.6324623036638
+104,6010754,Spaarne ziekenhuis Nieuw Vennep,Lucas Bolsstraat 10,Nieuw Vennep,NH,2152CZ,Ignore County,0123456789,Buitenpolikliniek,Spaarne Gasthuis,Yes,5,52.2727106297436,4.6289839237546
+105,6010754,Spaarne Ziekenhuis Polikliniek Hillegom,Abellalaan 1,Hillegom,ZH,2182TX,Ignore County,0123456789,Buitenpolikliniek,Spaarne Gasthuis,Yes,5,52.2854273256135,4.5782695389414
+106,,Spaarne Gasthuis  Velsen-Noord,Wijkstraatweg 160,Velsen-Noord,NH,1951EK,Ignore County,0123456789,Buitenpolikliniek,Spaarne Gasthuis,Yes,5,52.4711512306780,4.6457010732793
+107,6011108,Laurentius Ziekenhuis,Mgr. Driessenstraat 6,Roermond,LI,6043CV,Ignore County,0123456789,Algemeen ziekenhuis,Laurentius Ziekenhuis,Yes,5,51.1911230563829,5.9978506298073
+108,6011108,Laurentius Buitenpolikliniek Echt,Nobelweg 10,Echt,LI,6101XB,Ignore County,0123456789,Buitenpolikliniek,Laurentius Ziekenhuis,Yes,5,51.1175837344533,5.8774466864550
+109,6020801,Leids Universitair Medisch Centrum,Albinusdreef 2,Leiden,ZH,2333ZA,Ignore County,0123456789,Academisch ziekenhuis,Leids Universitair Medisch Centrum,Yes,5,52.1662548641540,4.4789931119430
+110,6020801,Willem-Alexander Kinderziekenhuis,Albinusdreef 2,Leiden,ZH,2333ZA,Ignore County,0123456789,Kinderziekenhuis,Leids Universitair Medisch Centrum,Yes,5,52.1662548641540,4.4789931119430
+111,6010107,Martini Ziekenhuis van Swieten,Van Swietenlaan 1,Groningen,GR,9728NT,Ignore County,0123456789,Algemeen ziekenhuis,Martini Ziekenhuis,Yes,5,53.1916702449590,6.5517548068101
+112,6011035,Máxima Medisch Centrum Veldhoven,De Run 4600,Veldhoven,NB,5504DB,Ignore County,0123456789,Algemeen ziekenhuis,Máxima Medisch Centrum,Yes,5,51.4061443508579,5.4200969719236
+113,6011035,Máxima Medisch Centrum Eindhoven,Ds. Th. Fliednerstraat 1,Eindhoven,NB,5631BM,Ignore County,0123456789,Algemeen ziekenhuis,Máxima Medisch Centrum,Yes,5,51.4556899733697,5.4881184900319
+114,6010619,Meander Medisch Centrum Baarn,Molenweg 2,Baarn,UT,3743CM,Ignore County,0123456789,Algemeen ziekenhuis,Meander Medisch Centrum,Yes,5,52.2148116371190,5.2769971343476
+115,6010619,Meander Medisch Centrum Amersfoort,Maatweg 3,Amersfoort,UT,3813TZ,Ignore County,0123456789,Algemeen ziekenhuis,Meander Medisch Centrum,Yes,5,52.1710800580020,5.3704707689861
+116,6010619,Meander Medisch Centrum de Mulderij ,De Mulderij 2,Leusden,UT,3831NV,Ignore County,0123456789,Buitenpolikliniek,Meander Medisch Centrum,Yes,5,52.1314324621604,5.4287877017272
+117,6010619,Meander Medisch Centrum Nijkerk,Oranjelaan 83-85,Nijkerk,GE,3862CX,Ignore County,0123456789,Buitenpolikliniek,Meander Medisch Centrum,Yes,5,52.2236542070130,5.4911680357220
+118,6010619,Meander Medisch Centrum Barneveld,Nederwoudse weg ,Barneveld,GE,3772TD,Ignore County,0123456789,Buitenpolikliniek,Meander Medisch Centrum,Yes,5,52.1259035842378,5.5790676442921
+120,6010702,Noordwest Ziekenhuisgroep  Alkmaar,Wilhelminalaan 12,Alkmaar,NH,1815JD,Ignore County,0123456789,Algemeen ziekenhuis,Noodwest Ziekenhuisgroep,Yes,5,52.6267414902229,4.7359156845658
+121,6010728,Noordwest Ziekenhuisgroep  Den Helder,Huisduinerweg 3,Den Helder,NH,1782GZ,Ignore County,0123456789,Algemeen ziekenhuis,Noodwest Ziekenhuisgroep,Yes,5,52.9577818051553,4.7456902358114
+122,6010728,Noordwest Ziekenhuisgroep  Schagen,Kaagweg 25,Schagen,NH,1741LC,Ignore County,0123456789,Buitenpolikliniek,Noodwest Ziekenhuisgroep,Yes,5,52.7834888393222,4.8085918029043
+123,6010728,Noordwest Ziekenhuisgroep  Polikliniek Texel,Pontweg 106,Den Burg,NH,1791LB,Ignore County,0123456789,Buitenpolikliniek,Noodwest Ziekenhuisgroep,Yes,5,53.0494717288159,4.7928021604516
+124,6010702,Noordwest Ziekenhuisgroep  Heerhugowaard,Stationsplein 49,Heerhugowaard,NH,1703WD,Ignore County,0123456789,Buitenpolikliniek,Noodwest Ziekenhuisgroep,Yes,5,52.6696692118390,4.8231946934483
+125,6010702,Noordwest Ziekenhuisgroep  Limmen,Zonnedauw 1906,Limmen,NH,1906HA,Ignore County,0123456789,Buitenpolikliniek,Noodwest Ziekenhuisgroep,Yes,5,52.5730830357737,4.6990585882634
+126,6010858,HMC Antoniushove,Burgemeester Banninglaan 1,Leidschendam,ZH,2262BA,Ignore County,0123456789,Algemeen ziekenhuis,Haaglanden Medisch Centrum,Yes,5,52.0926308513280,4.3832052815546
+127,6010858,HMC Westeinde,Lijnbaan 32,'s-Gravenhage,ZH,2512VA,Ignore County,0123456789,Algemeen ziekenhuis,Haaglanden Medisch Centrum,Yes,5,52.0740415200550,4.2992255463136
+128,6010844,HMC Bronovo,Bronovolaan 5,'s-Gravenhage,ZH,2597AX,Ignore County,0123456789,Algemeen ziekenhuis,Haaglanden Medisch Centrum,Yes,5,52.1019549359745,4.3166098545729
+129,6010844,HMC  Gezondheidscentrum Wassenaar,Hofcampweg 65,Wassenaar,ZH,2241KE,Ignore County,0123456789,Buitenpolikliniek,Haaglanden Medisch Centrum,Yes,5,52.1450133591896,4.4029480973753
+130,,HMC Buitenpolikliniek Savallelaan,Savallelaan 2,Voorburg,ZH,2273JX,Ignore County,0123456789,Buitenpolikliniek,Haaglanden Medisch Centrum,Yes,5,52.0794497765100,4.3533843142972
+131,,HMC Sport Medisch Centrum,Mr. P. Droogleever Fortuynweg 22,'s-Gravenhage,ZH,2533SR,Ignore County,0123456789,Buitenpolikliniek,Haaglanden Medisch Centrum,Yes,5,52.0558436885899,4.2911261038382
+132,6010861,Maasstad Ziekenhuis,Maasstadweg 21,Rotterdam,ZH,3079DZ,Ignore County,0123456789,Algemeen ziekenhuis,Maasstad ziekenhuis,Yes,5,51.8794585821402,4.5359319342380
+133,6010419,Medisch Spectrum Twente Ariënsplein,Haaksbergerstraat 55,Enschede,OV,7513ER,Ignore County,0123456789,Buitenpolikliniek,Medisch Spectrum Twente,Yes,5,52.2150372805882,6.8888821125492
+135,6010419,Medisch Spectrum Twente Oldenzaal,Pr. Bernhardstraat 17,Oldenzaal,OV,7573AM,Ignore County,0123456789,Buitenpolikliniek,Medisch Spectrum Twente,Yes,5,52.3074636022428,6.9312770993090
+136,6010419,Medisch Spectrum Twente Buitenpolikliniek Haaksbergen,Wiedenbroeksingel 4,Haaksbergen,OV,7481BT,Ignore County,0123456789,Buitenpolikliniek,Medisch Spectrum Twente,Yes,5,52.1601052518166,6.7515915364617
+137,6011002,Maasziekenhuis Pantein,Dokter Kopstraat 11,Beugen,NB,5835DV,Ignore County,0123456789,Algemeen ziekenhuis,Pantein,Yes,5,51.6632125098333,5.9407148722664
+138,6010848,Rivas Zorggroep Beatrixziekenhuis,Banneweg 57,Gorinchem,ZH,4204AA,Ignore County,0123456789,Algemeen ziekenhuis,Rivas Zorggroep,Yes,5,51.8390664214670,4.9569182746683
+139,6010848,Rivas Zorggroep Lingepolikliniek,Lingesteynplantsoen 3,Leerdam,ZH,4141GH,Ignore County,0123456789,Buitenpolikliniek,Rivas Zorggroep,Yes,5,51.8912246348738,5.1070037587077
+140,6010755,Rode Kruis Ziekenhuis Beverwijk,Vondellaan 13,Beverwijk,NH,1942LE,Ignore County,0123456789,Algemeen ziekenhuis,Rode Kruis Ziekenhuis,Yes,5,52.4799675265451,4.6495919254555
+141,6010863,Spijkenisse Medisch Centrum,Ruwaard van Puttenweg 500,Spijkenisse,ZH,3201GZ,Ignore County,0123456789,Algemeen ziekenhuis,Spijkenisse Medisch Centrum,Yes,5,51.8467752688670,4.3366569280176
+142,6010860,Spijkenisse Medisch Centrum Buitenpoli Hoogvliet,Oude Wal 24L,Hoogvliet,ZH,3193EN,Ignore County,0123456789,Buitenpolikliniek,Spijkenisse Medisch Centrum,Yes,5,51.8706888726447,4.3534179551759
+143,6010863,Spijkenisse Medisch Centrum Buitenpoli Rozenburg,Blankenburg 6,Rozenburg,ZH,3181BC,Ignore County,0123456789,Buitenpolikliniek,Spijkenisse Medisch Centrum,Yes,5,51.9015099179333,4.2559497981366
+144,6010418,Saxenburgh Groep Ziekenhuis Röpcke Zweers,Jan Weitkamplaan 4a,Hardenberg,OV,7772SE,Ignore County,0123456789,Algemeen ziekenhuis,Saxenburgh Groep,Yes,5,52.5706290068226,6.6392289558906
+145,6010418,Saxenburgh Groep Polikliniek Ommen,Hessel Mulertstraat 22,Ommen,OV,7731CL,Ignore County,0123456789,Buitenpolikliniek,Saxenburgh Groep,Yes,5,52.5196604741300,6.4288780863604
+146,6010418,Saxenburgh Groep Polikliniek Westhaar,Beeklaan 1,Westerhaar,OV,7676BC,Ignore County,0123456789,Buitenpolikliniek,Saxenburgh Groep,Yes,5,52.4560551601920,6.6204964590758
+147,6010509,Slingeland Ziekenhuis,Kruisbergseweg 25,Doetinchem,GE,7009BL,Ignore County,0123456789,Algemeen ziekenhuis,Santiz,Yes,5,51.9751528339168,6.2863042280550
+148,6010509,Slingeland Ziekenhuis Locatie Gezellenlaan,Gezellenlaan 10,Doetiechem,GE,7005AZ,Ignore County,0123456789,Buitenpolikliniek,Santiz,Yes,5,51.9536410756385,6.3020086723639
+149,6010530,Streekziekenhuis Koningin Beatrix,Beatrixpark 1,Winterswijk,GE,7101BN,Ignore County,0123456789,Algemeen ziekenhuis,Santiz,Yes,5,51.9770542996744,6.6994399197902
+150,6010530,Streekziekenhuis Koningin Beatrix Buitenpoli Eibergen,J W Hagemanstraat 46-2,Eibergen,GE,7151AH,Ignore County,0123456789,Buitenpolikliniek,Santiz,Yes,5,52.0999080907314,6.6510285296657
+151,6011011,St. Anna Ziekenhuis Geldrop,Bogardeind 2,Geldrop,NB,5664EH,Ignore County,0123456789,Algemeen ziekenhuis,St. Anna Zorggroep,Yes,5,51.4198535023360,5.5585613380112
+152,6011011,St. Anna Ziekenhuis Eindhoven,Antoon Coolenlaan 1-03,Eindhoven,NB,5644RX,Ignore County,0123456789,Buitenpolikliniek,St. Anna Zorggroep,Yes,5,51.4165802390558,5.4762033475173
+153,6010620,St. Antonius Ziekenhuis Nieuwegein,Koekoekslaan 1,Nieuwegein,UT,3435CM,Ignore County,0123456789,Algemeen ziekenhuis,St. Antonius Ziekenhuis,Yes,5,52.0255773915173,5.0824312782471
+154,6010620,St. Antonius Ziekenhuis Polikliniek Houten,Hofspoor 2,Houten,UT,3994VZ,Ignore County,0123456789,Buitenpolikliniek,St. Antonius Ziekenhuis,Yes,5,52.0251627718990,5.1770836317088
+155,6010620,St. Antonius Ziekenhuis Utrecht,Soestwetering 1,Utrecht,UT,3543AZ,Ignore County,0123456789,Algemeen ziekenhuis,St. Antonius Ziekenhuis,Yes,5,52.1037245823940,5.0572119070616
+156,6010620,St. Antonius Ziekenhuis Spatadercentrum,Van Lawick van Pabstlaan 12,Utrecht,UT,3453RB,Ignore County,0123456789,Buitenpolikliniek,St. Antonius Ziekenhuis,Yes,5,52.0827070346280,5.0190893496052
+157,6010620,St. Antonius Ziekenhuis Polikliniek Overvecht,Neckardreef 6,Utrecht,UT,3562CN,Ignore County,0123456789,Buitenpolikliniek,St. Antonius Ziekenhuis,Yes,5,52.1149964641454,5.1228146809059
+158,6010841,St. Antonius Ziekenhuis Woerden,Polanerbaan 2,Woerden,UT,3447GN,Ignore County,0123456789,Algemeen ziekenhuis,St. Antonius Ziekenhuis,Yes,5,52.0803365755451,4.8938697431003
+159,6010841,St. Antonius Ziekenhuis Polikliniek Mijdrecht,Hoofdweg 1,Mijdrecht,UT,3641PN,Ignore County,0123456789,Buitenpolikliniek,St. Antonius Ziekenhuis,Yes,5,52.2052296075758,4.8625144006835
+160,,St. Antonius Ziekenhuis Dialysecentrum Tiel,President Kennedylaan 1,Tiel,GE,4002WP,Ignore County,0123456789,Buitenpolikliniek,St. Antonius Ziekenhuis,Yes,5,51.8899851112053,5.4162371770732
+161,6011113,St. Jans Gasthuis,Vogelsbleek 5,Weert,LI,6001BE,Ignore County,0123456789,Algemeen ziekenhuis,St. Jans Gasthuis,Yes,5,51.2537069978927,5.7130997373117
+162,6011113,St. Jans Gasthuis Buitenpoli Budel,Grensweg 1,Budel,NB,6021JW,Ignore County,0123456789,Buitenpolikliniek,St. Jans Gasthuis,Yes,5,51.2616958210933,5.5638539102431
+163,6010533,Ziekenhuis St. Jansdal,Weth. Jansenlaan 90,Harderwijk,GE,3844DG,Ignore County,0123456789,Algemeen ziekenhuis,Ziekenhuis St. Jansdal,Yes,5,52.3441383911485,5.6142588928420
+164,6010533,Ziekenhuis St. Jansdal Polikliniek Dronten,Het Zwarte Water 77-83,Dronten,FL,8253PD,Ignore County,0123456789,Buitenpolikliniek,Ziekenhuis St. Jansdal,Yes,5,52.5382728707679,5.7024967235447
+165,6010533,Ziekenhuis St. Jansdal Polikliniek Nijkerk,Henri Nouwenstraat 18,Nijkerk,GE,3863HV,Ignore County,0123456789,Buitenpolikliniek,Ziekenhuis St. Jansdal,Yes,5,52.2102106033642,5.4640633922686
+167,6011201,MC Ziekenhuis St. Jansdal Lelystad,Ziekenhuisweg 100,Lelystad,FL,8233AA,Ignore County,0123456789,Algemeen ziekenhuis,Ziekenhuis St. Jansdal,Yes,5,52.5042872178320,5.4769847824262
+168,6010713,Onze Lieve Vrouwe Gasthuis locatie Oost,Oosterpark 9,Amsterdam,NH,1091AC,Ignore County,0123456789,Algemeen ziekenhuis,Onze Lieve Vrouwe Gasthuis,Yes,5,52.3599283257724,4.9159284176267
+169,6010713,Onze Lieve Vrouwe Gasthuis Spuistraat,Spuistraat 239A,Amsterdam,NH,1012VP,Ignore County,0123456789,Buitenpolikliniek,Onze Lieve Vrouwe Gasthuis,Yes,5,52.3709245289381,4.8894060757303
+170,6010713,Onze Lieve Vrouwe Gasthuis IJburg,IJburglaan 727,Amsterdam,NH,1087CH,Ignore County,0123456789,Buitenpolikliniek,Onze Lieve Vrouwe Gasthuis,Yes,5,52.3578511768332,4.9915744248391
+171,6010757,Onze Lieve Vrouwe Gasthuis locatie West,Jan Tooropstraat 164,Amsterdam,NH,1061AE,Ignore County,0123456789,Algemeen ziekenhuis,Onze Lieve Vrouwe Gasthuis,Yes,5,52.3687082736008,4.8365305403384
+172,6010202,Nij Smellinghe,Compagnonsplein 1,Drachten,FR,9202NN,Ignore County,0123456789,Algemeen ziekenhuis,Nij Smellinghe,Yes,5,53.0998699656110,6.1105687232679
+173,6010417,Deventer Ziekenhuisgroep,Nico Bolkesteinlaan 75,Deventer,OV,7416SE,Ignore County,0123456789,Algemeen ziekenhuis,Deventer Ziekenhuis,Yes,5,52.2611425250580,6.1924508951219
+174,6010417,Deventer Ziekenhuis Polikliniek Raalte,Vrieswijk 6b,Raalte,OV,8103PB,Ignore County,0123456789,Buitenpolikliniek,Deventer Ziekenhuis,Yes,5,52.3998414215663,6.2724846799379
+175,6010417,Deventer ZiekenhuisPolikliniek Rijssen,Wijnand Zeeuwstraat 26-101,Rijssen,OV,7462DE,Ignore County,0123456789,Buitenpolikliniek,Deventer Ziekenhuis,Yes,5,52.3016876753163,6.5187158831321
+176,6010805,Het Van Weel-Bethesda Polikliniek Hellevoetsluis,Vliet 4,Hellevoetsluis,ZH,3224HE,Ignore County,0123456789,Buitenpolikliniek,Het Van Weel-Bethesda Ziekenhuis,Yes,5,51.8327479338274,4.1487272704086
+177,6010805,Het Van Weel-Bethesda Dirksland,Stationsweg 22,Dirksland,ZH,3247BW,Ignore County,0123456789,Algemeen ziekenhuis,Het Van Weel-Bethesda Ziekenhuis,Yes,5,51.7496663718523,4.1013300897931
+178,6010805,Het Van Weel-Bethesda Polikliniek Brielle,Amer 21,Brielle,ZH,3232HA,Ignore County,0123456789,Buitenpolikliniek,Het Van Weel-Bethesda Ziekenhuis,Yes,5,51.8971973619287,4.1734687648115
+179,6010758,Tergooiziekenhuizen Hilversum,van Riebeeckweg 212,Hilversum,NH,1213XZ,Ignore County,0123456789,Algemeen ziekenhuis,Tergooiziekenhuizen,Yes,5,52.2174922139376,5.2028472242333
+180,6010758,Tergooiziekenhuizen Blaricum,Rijksstraatweg 1,Blaricum,NH,1261AN,Ignore County,0123456789,Algemeen ziekenhuis,Tergooiziekenhuizen,Yes,5,52.2676558929640,5.2076766449150
+181,6010758,Tergooiziekenhuizen Buitenpoli Weesp,Korte Muiderweg 2A ,Weesp,NH,1382LR,Ignore County,0123456789,Buitenpolikliniek,Tergooiziekenhuizen,Yes,5,52.3118318599349,5.0474608987786
+182,6011031,ETZ Tilburg,Dr. Deelenlaan 5,Tilburg,NB,5042AD,Ignore County,0123456789,Algemeen ziekenhuis,Elisabeth-TweeSteden,Yes,5,51.5767812292463,5.0631805684569
+183,6011031,ETZ Waalwijk,Kasteellaan 2,Waalwijk,NB,5141BM,Ignore County,0123456789,Algemeen ziekenhuis,Elisabeth-TweeSteden,Yes,5,51.6866426812692,5.0531767337747
+184,6011031,ETZ Oisterwijk,Moergestelseweg 32G,Oisterwijk,NB,5062JW,Ignore County,0123456789,Buitenpolikliniek,Elisabeth-TweeSteden,Yes,5,51.5727522817786,5.1814006946106
+185,6011022,ETZ Elisabeth,Hilvarenbeekseweg 60,Tilburg,NB,5022GC,Ignore County,0123456789,Algemeen ziekenhuis,Elisabeth-TweeSteden,Yes,5,51.5393146246139,5.1033191518098
+186,6020101,Universitair Medisch Centrum Groningen,Hanzeplein 1,Groningen,GR,9713GZ,Ignore County,0123456789,Academisch ziekenhuis,Universitair Medisch Centrum Groningen,Yes,5,53.2209882743460,6.5770464503669
+187,6020101,Universitair Medisch Centrum Groningen Beatrixoord,Dilgtweg 5,Haren,GR,9751ND,Ignore County,0123456789,Buitenpolikliniek,Universitair Medisch Centrum Groningen,Yes,5,53.1826960054946,6.5956587439123
+189,6020101,Ommelander Ziekenhuis Groep Servicepunt  Veendam,Kaap de Goede Hoop 1,Veendam,GR,9642AP,Ignore County,0123456789,Buitenpolikliniek,Ommelander Ziekenhuis Groep,Yes,5,53.1009773155517,6.8632262825915
+190,,Ommelander Ziekenhuis Groep Servicepunt Delfzijl,Schoolstraat 7,Delfzijl,GR,9934CD,Ignore County,0123456789,Buitenpolikliniek,Ommelander Ziekenhuis Groep,Yes,5,53.3306706327197,6.9252468424529
+191,6020502,Universitair Medisch Centrum St. Radboud,G. Grooteplein-Zuid 10,Nijmegen,GE,6525GA,Ignore County,0123456789,Academisch ziekenhuis,Universitair Medisch Centrum St. Radboud,Yes,5,51.8236685217857,5.8631087018571
+192,,Radboud UMC Amalia kinderziekenhuis,Geert Grooteplein-Zuid 10,Nijmegen,GE,6525GA,Ignore County,0123456789,Kinderziekenhuis,Universitair Medisch Centrum St. Radboud,Yes,5,51.8236685217857,5.8631087018571
+193,6020602,Universitair Medisch Centrum Utrecht,Heidelberglaan 100,Utrecht,UT,3584CX,Ignore County,0123456789,Academisch ziekenhuis,Universitair Medisch Centrum Utrecht,Yes,5,52.0860225881230,5.1796044695463
+194,6020602,Universitair Medisch Centrum Utrecht Wilhelmina Kinderziekenhuis,Lundlaan 6,Utrecht,UT,3584EA,Ignore County,0123456789,Kinderziekenhuis,Universitair Medisch Centrum Utrecht,Yes,5,52.0898373507524,5.1806567142547
+195,6011115,VieCuri Medisch Centrum Venlo,Tegelseweg 210,Venlo,LI,5912BL,Ignore County,0123456789,Algemeen ziekenhuis,VieCuri Medisch Centrum,Yes,5,51.3604430213711,6.1593216730527
+196,6011115,VieCuri Medisch Centrum Venray,Merseloseweg 130,Venray,LI,5801CE,Ignore County,0123456789,Algemeen ziekenhuis,VieCuri Medisch Centrum,Yes,5,51.5267271155230,5.9643402523609
+197,6011115,VieCuri Medisch Centrum Regiopoli Horst,Westsingel 100,Horst,LI,5961DH,Ignore County,0123456789,Buitenpolikliniek,VieCuri Medisch Centrum,Yes,5,51.4492048816738,6.0470528276195
+198,6011115,VieCuri Medisch Centrum Regiopoli Panningen,John F. Kennedylaan 321,Panningen,LI,5981WZ,Ignore County,0123456789,Buitenpolikliniek,VieCuri Medisch Centrum,Yes,5,51.3283250518063,5.9686846126391
+200,6010860,Franciscus Vlietland  Schiedam,Vlietlandplein 2,Schiedam,ZH,3118JH,Ignore County,0123456789,Algemeen ziekenhuis,Franciscus Gasthuis & Vlietland Groep,Yes,5,51.9226188132267,4.3799585992816
+201,,Franciscus Gasthuis Locatie Het Oogziekenhuis,Schiedamse Vest 180,Rotterdam,ZH,3011BH,Ignore County,0123456789,Buitenpolikliniek,Franciscus Gasthuis & Vlietland Groep,Yes,5,51.9153512089568,4.4800957104263
+202,6010860,Franciscus Maassluis,De Vloot 206,Maassluis,ZH,3144PK,Ignore County,0123456789,Buitenpolikliniek,Franciscus Gasthuis & Vlietland Groep,Yes,5,51.9299444965119,4.2430129946121
+203,6010832,Franciscus Berkel,Boerhaavestraat 19,Berkel Rodenrijs,ZH,2652EP,Ignore County,0123456789,Buitenpolikliniek,Franciscus Gasthuis & Vlietland Groep,Yes,5,51.9966581708362,4.4747921479827
+204,6010832,Franciscus Gasthuis,Kleiweg 500,Rotterdam,ZH,3045PM,Ignore County,0123456789,Algemeen ziekenhuis,Franciscus Gasthuis & Vlietland Groep,Yes,5,51.9410646001500,4.4668049093217
+205,,Franciscus  Haven,Haringvliet 2,Rotterdam,ZH,3011TD,Ignore County,0123456789,Buitenpolikliniek,Franciscus Gasthuis & Vlietland Groep,Yes,5,51.9199975859359,4.4964142061163
+206,6010751,Waterlandziekenhuis,Waterlandlaan 250,Purmerend,NH,1441RN,Ignore County,0123456789,Algemeen ziekenhuis,Dijklander Ziekenhuis,Yes,5,52.5006882881860,4.9626561577977
+207,6010751,Waterlandziekenhuis Behandelcentrum Waterland-Oost,Heideweg 1b,Volendam,NH,1132DA,Ignore County,0123456789,Buitenpolikliniek,Dijklander Ziekenhuis,Yes,5,52.4931174927904,5.0564321240163
+208,6010752,Westfries Gasthuis,Fr. Maelsonstraat 3,Hoorn Nh,NH,1624NP,Ignore County,0123456789,Algemeen ziekenhuis,Dijklander Ziekenhuis,Yes,5,52.6481501021218,5.0529393306837
+209,6010752,Westfries Gasthuis Enkhuizen,Molenweg 9b,Enkhuizen,NH,1601SR,Ignore County,0123456789,Buitenpolikliniek,Dijklander Ziekenhuis,Yes,5,52.7034201741457,5.2818608363105
+210,6010301,Wilhelmina Ziekenhuis Assen,Europaweg-Zuid 1,Assen,DR,9401RK,Ignore County,0123456789,Algemeen ziekenhuis,Wilhelmina Ziekenhuis Assen,Yes,5,52.9837135751648,6.5651827037320
+211,6010301,Het Medisch Centrum Wilhelmina,Borgstee 17,Assen,DR,9403TS,Ignore County,0123456789,Buitenpolikliniek,Wilhelmina Ziekenhuis Assen,Yes,5,53.0129575367282,6.5713744054969
+212,6010742,Zaans Medisch Centrum,Koningin Julianaplein 58,Zaandam,NH,1502DV,Ignore County,0123456789,Algemeen ziekenhuis,Zaans Medisch Centrum,Yes,5,52.4532721713055,4.8262455307210
+213,6010742,Zaans Medisch Centrum Polikliniek Saendelft,Kaaikhof 69,Assendelft,NH,1567JP,Ignore County,0123456789,Buitenpolikliniek,Zaans Medisch Centrum,Yes,5,52.4886791740658,4.7522393430933
+214,6010704,Ziekenhuis Amstelland,Laan van de Helende Meesters 8,Amstelveen,NH,1186AM,Ignore County,0123456789,Algemeen ziekenhuis,Ziekenhuis Amstelland,Yes,5,52.2943824441259,4.8695447246049
+215,6010704,Ziekenhuis Amstelland Buitenpolikliniek Uithoorn,Koningin Máximalaan 30,Uithoorn,NH,1421LC,Ignore County,0123456789,Buitenpolikliniek,Ziekenhuis Amstelland,Yes,5,52.2453245051259,4.8077963707736
+217,6011032,Ziekenhuis Bernhoven Uden,Nistelrodeseweg 10,Uden,NB,5406PT,Ignore County,0123456789,Algemeen ziekenhuis,Ziekenhuis Bernhoven,Yes,5,51.6748720457808,5.6017299496785
+218,6010534,Ziekenhuis De Gelderse Vallei Ede,Willy Brandtlaan 10,Ede,GE,6716RP,Ignore County,0123456789,Algemeen ziekenhuis,Ziekenhuis De Gelderse Vallei,Yes,5,52.0224429838680,5.6455629435151
+219,6010534,Ziekenhuis De Gelderse Vallei Polikliniek Barneveld,Klaverweide 1a,Barneveld,GE,3773AW,Ignore County,0123456789,Buitenpolikliniek,Ziekenhuis De Gelderse Vallei,Yes,5,52.1397336033394,5.5998265912174
+220,6010534,Ziekenhuis De Gelderse Vallei Polikliniek Veenendaal,Spoorlaan 5,Veenendaal,UT,3903XS,Ignore County,0123456789,Buitenpolikliniek,Ziekenhuis De Gelderse Vallei,Yes,5,52.0186605489149,5.5497651561889
+221,6010534,Ziekenhuis De Gelderse Vallei Polikliniek Wageningen,Plantsoen 57b,Wageningen,GE,6701AS,Ignore County,0123456789,Buitenpolikliniek,Ziekenhuis De Gelderse Vallei,Yes,5,51.9669302375102,5.6622616839615
+222,6010520,Ziekenhuis Rivierenland,Pres. Kennedylaan 1,Tiel,GE,4002WP,Ignore County,0123456789,Algemeen ziekenhuis,Ziekenhuis Rivierenland,Yes,5,51.8899851112053,5.4162371770732
+223,6010520,Ziekenhuis Rivierenland Barbara Polikliniek Culemborg,Elisabethdreef 4,Culemborg,GE,4101KL,Ignore County,0123456789,Buitenpolikliniek,Ziekenhuis Rivierenland,Yes,5,51.9588697148160,5.2289651868238
+224,6010520,Ziekenhuis Rivierenland Waterpoort Polikliniek Beneden Leeuwen,Beatrixstraat 20,Beneden Leeuwen,GE,6658EK,Ignore County,0123456789,Buitenpolikliniek,Ziekenhuis Rivierenland,Yes,5,51.8817122025811,5.5190958318586
+225,6010913,Zorgsaam Zeeuw-Vlaanderen Locatie De Honte,Wielingenlaan 2,Terneuzen,ZE,4535PA,Ignore County,0123456789,Algemeen ziekenhuis,ZorgSaam Zeeuws-Vlaanderen,Yes,5,51.3089416325320,3.8612522011380
+226,6010913,Zorgsaam Zeeuw-Vlaanderen Locatie Antonius,Pastoor van Genklaan 6,Oostburg,ZE,4501AJ,Ignore County,0123456789,Algemeen ziekenhuis,ZorgSaam Zeeuws-Vlaanderen,Yes,5,51.3249636305620,3.4815932954064
+227,6010913,Zorgsaam Zeeuw-Vlaanderen Locatie Liduina,Lyceumstraat 20,Hulst,ZE,4561HV,Ignore County,0123456789,Buitenpolikliniek,ZorgSaam Zeeuws-Vlaanderen,Yes,5,51.2863745104607,4.0492254861126
+228,,Zorgsaam Zeeuw-Vlaanderen Cardiologie centrum Middelburg,Buitenruststraat 16,Middelburg,ZE,4337EH,Ignore County,0123456789,Buitenpolikliniek,ZorgSaam Zeeuws-Vlaanderen,Yes,5,51.4922366180154,3.6176864538050
+229,6010421,Ziekenhuisgroep Twente Locatie Hengelo,Geerdinksweg 141,Hengelo Ov,OV,7555DL,Ignore County,0123456789,Algemeen ziekenhuis,Ziekenhuisgroep Twente,Yes,5,52.2638132035782,6.7714087960221
+230,6010421,Ziekenhuisgroep Twente Locatie Almeo,Zilvermeeuw 1,Almelo,OV,7609PP,Ignore County,0123456789,Algemeen ziekenhuis,Ziekenhuisgroep Twente,Yes,5,52.3330851725635,6.6467362592083
+231,,Ziekenhuisgroep Twente Buitenpolikliniek Rijssen,Wijnand Zeeuwtraat 26-101,Rijssen,OV,7462DE,Ignore County,0123456789,Buitenpolikliniek,Ziekenhuisgroep Twente,Yes,5,52.3016876753163,6.5187158831321
+232,,Ziekenhuisgroep Twente Buitenpost Ootmarsum,De Meijer 1,Ootmarsum,OV,7631AM,Ignore County,0123456789,Buitenpolikliniek,Ziekenhuisgroep Twente,Yes,5,52.4102033425036,6.8974996300781
+233,,Ziekenhuisgroep Twente Buitenpost Geesteren,De aanleg 17,Geesteren,OV,7678VZ,Ignore County,0123456789,Buitenpolikliniek,Ziekenhuisgroep Twente,Yes,5,52.4206588388155,6.7349328979726
+234,6010210,Medisch Centrum Leeuwarden,H. Dunantweg 2,Leeuwarden,FR,8934AD,Ignore County,0123456789,Algemeen ziekenhuis,Zorgpartners Friesland,Yes,5,53.1893940022000,5.8073354090578
+235,6010210,Medisch Centrum Leeuwarden Harlingen,Achlumerdijk 2,Harlingen,FR,8862AJ,Ignore County,0123456789,Buitenpolikliniek,Zorgpartners Friesland,Yes,5,53.1632249833739,5.4345115752271
+236,6010205,De Tjongerschans Polikliniek Steenwijk,Mr. Zigher ter Steghestraat 9,Steenwijk,OV,8331KG,Ignore County,0123456789,Buitenpolikliniek,Zorgpartners Friesland,Yes,5,52.7900361088504,6.1098089611700
+237,6010205,De Tjongerschans Polikliniek Sportstad,Abe Lenstra Boulevard 21,Heerenveen,FR,8448JA,Ignore County,0123456789,Buitenpolikliniek,Zorgpartners Friesland,Yes,5,52.9576310750513,5.9368405856100
+238,6010205,De Tjongerschans Polikliniek Lemmer,Van Rijgersmapark 1,Lemmer,FR,8531JA,Ignore County,0123456789,Buitenpolikliniek,Zorgpartners Friesland,Yes,5,52.8462147941539,5.6981093982188
+239,6010205,De Tjongerschans Heerenveen,Thialfweg 44,Heerenveen,FR,8441PW,Ignore County,0123456789,Algemeen ziekenhuis,Zorgpartners Friesland,Yes,5,52.9672013345297,5.9183213182478
+240,6010304,Ziekehuislocatie Scheper Emmen,Boermarkeweg 60,Emmen,DR,7824AA,Ignore County,0123456789,Algemeen ziekenhuis,Treant Zorggroep,Yes,5,52.7845561170541,6.9134139235939
+241,6010105,Ziekenhuislocatie Bethesda Hoogeveen,Dr. G.H. Amshoffweg 1,Hoogeveen,DR,7909AA,Ignore County,0123456789,Algemeen ziekenhuis,Treant Zorggroep,Yes,5,52.7272027168615,6.4603747131626
+242,6010105,Ziekenhuislocatie Refaja Stadskanaal,Boerhaavestraat 1,Stadskanaal,GR,9501HE,Ignore County,0123456789,Algemeen ziekenhuis,Treant Zorggroep,Yes,5,53.0006171723514,6.9352565812642
+243,6010105,Buitenpoli Veenkade,Kaap de Goede Hoop 1,Veendam,GR,9642AP,Ignore County,0123456789,Buitenpolikliniek,Treant Zorggroep,Yes,5,53.1009773155517,6.8632262825915
+244,,Antoni van Leeuwenhoek,Plesmanlaan 121,Amsterdam,NH,1066CX,Ignore County,0123456789,Algemeen ziekenhuis,Antoni van Leeuwenhoek,Yes,5,52.3506972343144,4.8183245996227
+245,,Prinses Máxima Centrum,Heidelberglaan 25,Utrecht,UT,3584CS,Ignore County,0123456789,Kinderziekenhuis,Prinses Máxima Centrum voor kinderoncologie,Yes,5,52.0846172145858,5.1736978159717

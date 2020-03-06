@@ -51,7 +51,7 @@ public class AppTest {
     Assert.assertTrue(output.contains("alive=4"));
     Assert.assertTrue(output.contains("dead="));
     Assert.assertFalse(output.contains("y/o F"));
-    Assert.assertTrue(output.contains("Location: " + Generator.DEFAULT_STATE));
+    Assert.assertTrue(output.contains("Location: " + Config.get("generate.demographics.state.default_state")));
     System.setOut(original);
   }
 
@@ -69,7 +69,7 @@ public class AppTest {
     Assert.assertTrue(output.contains("Running with options:"));
     Assert.assertTrue(output.contains("Seed:"));
     Assert.assertTrue(output.contains("alive=3"));
-    Assert.assertTrue(output.contains("Location: " + Generator.DEFAULT_STATE));
+    Assert.assertTrue(output.contains("Location: " + Config.get("generate.demographics.state.default_state")));
     String regex = "(.\n)*(3[0-9] y/o)(.\n)*";
     Assert.assertTrue(Pattern.compile(regex).matcher(output).find());
     regex = "(.\n)*(\\(([0-9]|[0-2][0-9]|[4-9][0-9]) y/o)(.\n)*";

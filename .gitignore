@@ -25,3 +25,6 @@ src/main/resources/version.txt
 
 # IntelliJ
 .idea
+
+# Libreoffice (resource files)
+.~lock.*#

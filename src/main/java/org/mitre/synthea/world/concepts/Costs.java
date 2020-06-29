@@ -65,8 +65,19 @@ public class Costs {
       // Not an entry type that has an associated cost.
       return 0.0;
     }
+    String code = "";
+    try {
+      code = entry.codes.get(0).code;
+    } catch (Exception exception) {
+      System.out.println("determineCostOfEntry Exception:");
+      System.out.println(entry.codes);
+      System.out.println(entry);
+      System.out.println(costs);
+      System.out.println(defaultCost);
+      System.out.println(person);
+      System.out.println("Exception dump end");
+    }
 
-    String code = entry.codes.get(0).code;
     // Retrieve the base cost based on the code.
     double baseCost;
     if (costs != null && costs.containsKey(code)) {

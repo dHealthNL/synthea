@@ -556,7 +556,12 @@ public class Person implements Serializable, QuadTreeElement {
 
   public void setProvider(EncounterType type, Provider provider) {
     String key = PREFERREDYPROVIDER + type;
-    attributes.put(key, provider);
+
+    try {
+      attributes.put(key, provider);
+    } catch (NullPointerException exception) {
+      System.out.println(key);
+    }
   }
 
   public void setProvider(EncounterType type, long time) {

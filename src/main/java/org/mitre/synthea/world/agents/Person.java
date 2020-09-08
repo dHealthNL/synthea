@@ -8,19 +8,22 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.mitre.synthea.engine.ExpressedConditionRecord;
+import org.mitre.synthea.engine.ExpressedSymptom;
 import org.mitre.synthea.engine.Module;
 import org.mitre.synthea.engine.State;
 import org.mitre.synthea.helpers.Config;
 import org.mitre.synthea.helpers.ConstantValueGenerator;
+import org.mitre.synthea.helpers.RandomNumberGenerator;
 import org.mitre.synthea.helpers.Utilities;
 import org.mitre.synthea.helpers.ValueGenerator;
 import org.mitre.synthea.modules.QualityOfLifeModule;
@@ -31,7 +34,7 @@ import org.mitre.synthea.world.concepts.HealthRecord.EncounterType;
 import org.mitre.synthea.world.concepts.VitalSign;
 import org.mitre.synthea.world.geography.quadtree.QuadTreeElement;
 
-public class Person implements Serializable, QuadTreeElement {
+public class Person implements Serializable, RandomNumberGenerator, QuadTreeElement {
   private static final long serialVersionUID = 4322116644425686379L;
   private static final ZoneId timeZone = ZoneId.systemDefault();
 
@@ -80,17 +83,29 @@ public class Person implements Serializable, QuadTreeElement {
   public static final String LOCATION = "location";
   public static final String ACTIVE_WEIGHT_MANAGEMENT = "active_weight_management";
   public static final String BMI_PERCENTILE = "bmi_percentile";
+  public static final String GROWTH_TRAJECTORY = "growth_trajectory";
   public static final String CURRENT_WEIGHT_LENGTH_PERCENTILE = "current_weight_length_percentile";
   private static final String DEDUCTIBLE = "deductible";
   private static final String LAST_MONTH_PAID = "last_month_paid";
 
-  public final Random random;
+  private final Random random;
   public final long seed;
   public long populationSeed;
+  /** 
+   * Tracks the last time that the person was updated over a serialize/deserialize.
+   */
+  public long lastUpdated;
+  /**
+   * Tracks the remaining modules for a person over a serialize/deserialize.
+   */
+  public List<Module> currentModules;
   public Map<String, Object> attributes;
   public Map<VitalSign, ValueGenerator> vitalSigns;
-  private Map<String, Map<String, Integer>> symptoms;
-  private Map<String, Map<String, Boolean>> symptomStatuses;
+  /** Data structure for storing symptoms faced by a person.
+   * Adding the Long keyset to keep track of the time a symptom is set. */
+  Map<String, ExpressedSymptom> symptoms;
+  /** Data structure for storing onset conditions (init_time, end_time).*/
+  public ExpressedConditionRecord onsetConditionRecord;
   public Map<String, HealthRecord.Medication> chronicMedications;
   /** The active health record. */
   public HealthRecord record;
@@ -125,12 +140,13 @@ public class Person implements Serializable, QuadTreeElement {
    * Person constructor.
    */
   public Person(long seed) {
-    this.seed = seed; // keep track of seed so it can be exported later
+    this.seed = seed;
     random = new Random(seed);
     attributes = new ConcurrentHashMap<String, Object>();
     vitalSigns = new ConcurrentHashMap<VitalSign, ValueGenerator>();
-    symptoms = new ConcurrentHashMap<String, Map<String, Integer>>();
-    symptomStatuses = new ConcurrentHashMap<String, Map<String, Boolean>>();
+    symptoms = new ConcurrentHashMap<String, ExpressedSymptom>();
+    /* initialized the onsetConditions field */
+    onsetConditionRecord = new ExpressedConditionRecord(this);
     /* Chronic Medications which will be renewed at each Wellness Encounter */
     chronicMedications = new ConcurrentHashMap<String, HealthRecord.Medication>();
     hasMultipleRecords =
@@ -153,81 +169,17 @@ public class Person implements Serializable, QuadTreeElement {
   }
 
   /**
-   * Retuns a random double.
+   * Returns a random double.
    */
   public double rand() {
     return random.nextDouble();
   }
 
   /**
-   * Returns a random double in the given range.
+   * Returns a random boolean.
    */
-  public double rand(double low, double high) {
-    return (low + ((high - low) * random.nextDouble()));
-  }
-
-  /**
-   * Returns a random double in the given range with no more that the specified
-   * number of decimal places.
-   */
-  public double rand(double low, double high, Integer decimals) {
-    double value = rand(low, high);
-    if (decimals != null) {
-      value = BigDecimal.valueOf(value).setScale(decimals, RoundingMode.HALF_UP).doubleValue();
-    }
-    return value;
-  }
-
-  /**
-   * Helper function to get a random number based on an array of [min, max]. This
-   * should be used primarily when pulling ranges from YML.
-   * 
-   * @param range array [min, max]
-   * @return random double between min and max
-   */
-  public double rand(double[] range) {
-    if (range == null || range.length != 2) {
-      throw new IllegalArgumentException(
-          "input range must be of length 2 -- got " + Arrays.toString(range));
-    }
-
-    if (range[0] > range[1]) {
-      throw new IllegalArgumentException(
-          "range must be of the form {low, high} -- got " + Arrays.toString(range));
-    }
-
-    return rand(range[0], range[1]);
-  }
-
-  /**
-   * Return one of the options randomly with uniform distribution.
-   * 
-   * @param choices The options to be returned.
-   * @return One of the options randomly selected.
-   */
-  public String rand(String[] choices) {
-    return choices[random.nextInt(choices.length)];
-  }
-
-  /**
-   * Helper function to get a random number based on an integer array of [min,
-   * max]. This should be used primarily when pulling ranges from YML.
-   * 
-   * @param range array [min, max]
-   * @return random double between min and max
-   */
-  public double rand(int[] range) {
-    if (range == null || range.length != 2) {
-      throw new IllegalArgumentException(
-          "input range must be of length 2 -- got " + Arrays.toString(range));
-    }
-
-    if (range[0] > range[1]) {
-      throw new IllegalArgumentException(
-          "range must be of the form {low, high} -- got " + Arrays.toString(range));
-    }
-
-    return rand(range[0], range[1]);
+  public boolean randBoolean() {
+    return random.nextBoolean();
   }
 
   /**
@@ -244,6 +196,27 @@ public class Person implements Serializable, QuadTreeElement {
     return random.nextInt(bound);
   }
 
+  /**
+   * Returns a double from a normal distribution.
+   */
+  public double randGaussian() {
+    return random.nextGaussian();
+  }
+
+  /**
+   * Return a random long.
+   */
+  public long randLong() {
+    return random.nextLong();
+  }
+  
+  /**
+   * Return a random UUID.
+   */
+  public UUID randUUID() {
+    return new UUID(randLong(), randLong());
+  }
+  
   /**
    * Returns a person's age in Period form.
    */
@@ -316,25 +289,54 @@ public class Person implements Serializable, QuadTreeElement {
     Long died = (Long) attributes.get(Person.DEATHDATE);
     return (born && (died == null || died > time));
   }
-
-  public void setSymptom(String cause, String type, int value, Boolean addressed) {
-    if (!symptoms.containsKey(type)) {
-      symptoms.put(type, new ConcurrentHashMap<String, Integer>());
-      symptomStatuses.put(type, new ConcurrentHashMap<String, Boolean>());
-    }
-    symptoms.get(type).put(cause, value);
-    symptomStatuses.get(type).put(cause, addressed);
+  
+  /**
+  * Get the expressed symptoms.
+  */
+  public Map<String, ExpressedSymptom> getExpressedSymptoms() {
+    return symptoms;
   }
-
+  
+  /**
+  * Get the onsetonditionRecord.
+  */
+  public ExpressedConditionRecord getOnsetConditionRecord() {
+    return onsetConditionRecord;
+  }
+  
+  /** Updating the method for accounting of the time on which
+   * the symptom is set. 
+   */
+  public void setSymptom(String module, String cause, String type, 
+      long time, int value, Boolean addressed) {
+    if (!symptoms.containsKey(type)) {
+      symptoms.put(type, new ExpressedSymptom(type));
+    }
+    ExpressedSymptom expressedSymptom = symptoms.get(type);
+    expressedSymptom.onSet(module, cause, time, value, addressed);
+  }
+  
+  /**
+   * Method for retrieving the last time a given symptom has been updated from a given module.
+   */
+  public Long getSymptomLastUpdatedTime(String module, String symptom) {
+    Long result = null;
+    if (symptoms.containsKey(symptom)) {
+      ExpressedSymptom expressedSymptom = symptoms.get(symptom);
+      result = expressedSymptom.getSymptomLastUpdatedTime(module);
+    }
+    return result;
+  }
+  
+  /**
+   * Method for retrieving the value associated to a given symptom. 
+   * This correspond to the maximum value across all potential causes.
+   */
   public int getSymptom(String type) {
     int max = 0;
-    if (symptoms.containsKey(type) && symptomStatuses.containsKey(type)) {
-      Map<String, Integer> typedSymptoms = symptoms.get(type);
-      for (String cause : typedSymptoms.keySet()) {
-        if (typedSymptoms.get(cause) > max && !symptomStatuses.get(type).get(cause)) {
-          max = typedSymptoms.get(cause);
-        }
-      }
+    if (symptoms.containsKey(type)) {
+      ExpressedSymptom expressedSymptom = symptoms.get(type);
+      max = expressedSymptom.getSymptom();
     }
     return max;
   }
@@ -346,7 +348,7 @@ public class Person implements Serializable, QuadTreeElement {
    */
   public Set<String> getSymptoms() {
     Set<String> active = new HashSet<String>(symptoms.keySet());
-    for (String symptom : symptomStatuses.keySet()) {
+    for (String symptom : symptoms.keySet()) {
       int severity = getSymptom(symptom);
       if (severity < 20) {
         active.remove(symptom);
@@ -355,26 +357,31 @@ public class Person implements Serializable, QuadTreeElement {
     return active;
   }
 
-  // Mark the largest valued symptom as addressed.
+  /**
+   * Mark the largest valued symptom as addressed.
+   */
   public void addressLargestSymptom() {
     String highestType = "";
     String highestCause = "";
     int maxValue = 0;
     for (String type : symptoms.keySet()) {
-      if (symptoms.containsKey(type) && symptomStatuses.containsKey(type)) {
-        Map<String, Integer> typedSymptoms = symptoms.get(type);
-        for (String cause : typedSymptoms.keySet()) {
-          if (typedSymptoms.get(cause) > maxValue && !symptomStatuses.get(type).get(cause)) {
-            maxValue = typedSymptoms.get(cause);
-            highestCause = cause;
-            highestType = type;
-          }
+      ExpressedSymptom expressedSymptom = symptoms.get(type);
+      String cause = expressedSymptom.getSourceWithHighValue();
+      if (cause != null) {
+        int value = expressedSymptom.getValueFromSource(cause);
+        if (value > maxValue) {
+          maxValue = value;
+          highestCause = cause;
+          highestType = type;                
         }
       }
     }
-    symptomStatuses.get(highestType).put(highestCause, true);
+    symptoms.get(highestType).addressSource(highestCause);
   }
 
+  /**
+   * Get a vital sign value.
+   */
   public Double getVitalSign(VitalSign vitalSign, long time) {
     ValueGenerator valueGenerator = vitalSigns.get(vitalSign);
     if (valueGenerator == null) {
@@ -397,7 +404,15 @@ public class Person implements Serializable, QuadTreeElement {
       default:
         decimalPlaces = 2;
     }
-    return BigDecimal.valueOf(value).setScale(decimalPlaces, RoundingMode.HALF_UP).doubleValue();
+    Double retVal = value;
+    try {
+      retVal = BigDecimal.valueOf(value)
+              .setScale(decimalPlaces, RoundingMode.HALF_UP)
+              .doubleValue();
+    } catch (NumberFormatException e) {
+      // Ignore, value was NaN or infinity.
+    }
+    return retVal;
   }
 
   public void setVitalSign(VitalSign vitalSign, ValueGenerator valueGenerator) {
@@ -408,6 +423,11 @@ public class Person implements Serializable, QuadTreeElement {
    * Convenience function to set a vital sign to a constant value.
    */
   public void setVitalSign(VitalSign vitalSign, double value) {
+    if (!Double.isFinite(value)) {
+      throw new IllegalArgumentException(String.format(
+              "Vital signs must have finite values - %s is invalid", 
+              Double.valueOf(value).toString()));
+    }
     setVitalSign(vitalSign, new ConstantValueGenerator(this, value));
   }
 
@@ -419,13 +439,14 @@ public class Person implements Serializable, QuadTreeElement {
    */
   public void recordDeath(long time, Code cause) {
     if (alive(time)) {
-      attributes.put(Person.DEATHDATE, Long.valueOf(time));
+      long deathTime = time;
+      attributes.put(Person.DEATHDATE, Long.valueOf(deathTime));
       if (cause == null) {
         attributes.remove(CAUSE_OF_DEATH);
       } else {
         attributes.put(CAUSE_OF_DEATH, cause);
       }
-      record.death = time;
+      record.death = deathTime;
     }
   }
 
@@ -443,14 +464,13 @@ public class Person implements Serializable, QuadTreeElement {
     return total;
   }
 
-  public void resetSymptoms() {
-    symptoms.clear();
-  }
-
   public boolean hadPriorState(String name) {
     return hadPriorState(name, null, null);
   }
 
+  /**
+   * Check for prior existence of specified state. 
+   */
   public boolean hadPriorState(String name, String since, Long within) {
     if (history == null) {
       return false;
@@ -469,6 +489,9 @@ public class Person implements Serializable, QuadTreeElement {
     return false;
   }
 
+  /**
+   * Start an encounter for the current provider.
+   */
   public Encounter encounterStart(long time, EncounterType type) {
     // Set the record for the current provider as active
     Provider provider = getProvider(type, time);
@@ -495,7 +518,7 @@ public class Person implements Serializable, QuadTreeElement {
 
     HealthRecord returnValue = this.defaultRecord;
     if (hasMultipleRecords) {
-      String key = provider.uuid;
+      String key = provider.getResourceID();
       if (!records.containsKey(key)) {
         HealthRecord record = null;
         if (this.record != null && this.record.provider == null) {
@@ -513,6 +536,9 @@ public class Person implements Serializable, QuadTreeElement {
 
   public static final String CURRENT_ENCOUNTERS = "current-encounters";
 
+  /**
+   * Get the current encounter for the specified module or null if none exists.
+   */
   @SuppressWarnings("unchecked")
   public Encounter getCurrentEncounter(Module module) {
     Map<String, Encounter> moduleToCurrentEncounter
@@ -525,7 +551,33 @@ public class Person implements Serializable, QuadTreeElement {
 
     return moduleToCurrentEncounter.get(module.name);
   }
+  
+  /**
+   * Check if there are any current encounters.
+   * @return true if there current encounters, false otherwise
+   */
+  public boolean hasCurrentEncounter() {
+    if (attributes != null) {
+      Map<String, Encounter> moduleToCurrentEncounter
+              = (Map<String, Encounter>) attributes.get(CURRENT_ENCOUNTERS);
 
+      if (moduleToCurrentEncounter != null && !moduleToCurrentEncounter.isEmpty()) {
+        // Uncomment the following lines to see which module encounters are blocking the start
+        // of wellness encounters in the encounter module.
+        // System.out.println("Pre-wellness Encounter Check Failed:");
+        // for (String module: moduleToCurrentEncounter.keySet()) {
+        //   Encounter encounter = moduleToCurrentEncounter.get(module);
+        //   System.out.printf("%s, %s\n", module, encounter.codes.get(0).code);
+        // }
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Set the current encounter for the specified module.
+   */
   @SuppressWarnings("unchecked")
   public void setCurrentEncounter(Module module, Encounter encounter) {
     Map<String, Encounter> moduleToCurrentEncounter
@@ -546,6 +598,10 @@ public class Person implements Serializable, QuadTreeElement {
   public static final String CURRENTPROVIDER = "currentProvider";
   public static final String PREFERREDYPROVIDER = "preferredProvider";
 
+  /**
+   * Get the preferred provider for the specified encounter type. If none is set the
+   * provider at the specified time as the preferred provider for this encounter type.
+   */
   public Provider getProvider(EncounterType type, long time) {
     String key = PREFERREDYPROVIDER + type;
     if (!attributes.containsKey(key)) {
@@ -554,16 +610,29 @@ public class Person implements Serializable, QuadTreeElement {
     return (Provider) attributes.get(key);
   }
 
+  /**
+   * Set the preferred provider for the specified encounter type.
+   */
   public void setProvider(EncounterType type, Provider provider) {
+    if (provider == null) {
+      throw new RuntimeException("Unable to find provider: " + type);
+    }
     String key = PREFERREDYPROVIDER + type;
     attributes.put(key, provider);
   }
 
+  /**
+   * Set the preferred provider for the specified encounter type to be the provider
+   * at the specified time.
+   */
   public void setProvider(EncounterType type, long time) {
     Provider provider = Provider.findService(this, type, time);
     setProvider(type, provider);
   }
 
+  /**
+   * Set the current provider to be the supplied provider.
+   */
   @SuppressWarnings({ "unchecked", "rawtypes" })
   public void addCurrentProvider(String context, Provider provider) {
     Map<String, Provider> currentProviders = (Map) attributes.get(CURRENTPROVIDER);
@@ -574,6 +643,9 @@ public class Person implements Serializable, QuadTreeElement {
     attributes.put(CURRENTPROVIDER, currentProviders);
   }
 
+  /**
+   * Remove the current provider for the specified module.
+   */
   @SuppressWarnings({ "unchecked", "rawtypes" })
   public void removeCurrentProvider(String module) {
     Map<String, Provider> currentProviders = (Map) attributes.get(CURRENTPROVIDER);
@@ -582,6 +654,9 @@ public class Person implements Serializable, QuadTreeElement {
     }
   }
 
+  /**
+   * Get the current provider for the specified module.
+   */
   @SuppressWarnings({ "unchecked", "rawtypes" })
   public Provider getCurrentProvider(String module) {
     Map<String, Provider> currentProviders = (Map) attributes.get(CURRENTPROVIDER);
@@ -653,14 +728,23 @@ public class Person implements Serializable, QuadTreeElement {
    * Returns the person's Payer at the given time.
    */
   public Payer getPayerAtTime(long time) {
-    return this.payerHistory[this.ageInYears(time)];
+    int ageInYears = this.ageInYears(time);
+    if (this.payerHistory.length > ageInYears) {
+      return this.payerHistory[ageInYears];
+    } else {
+      return null;
+    }
   }
 
   /**
    * Returns the person's Payer at the given age.
    */
   public Payer getPayerAtAge(int personAge) {
-    return this.payerHistory[personAge];
+    if (this.payerHistory.length > personAge) {
+      return this.payerHistory[personAge];
+    } else {
+      return null;
+    }
   }
 
   /**

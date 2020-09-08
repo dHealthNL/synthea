@@ -7,6 +7,7 @@ import java.util.Map;
 import org.mitre.synthea.helpers.Attributes;
 import org.mitre.synthea.helpers.Attributes.Inventory;
 import org.mitre.synthea.world.agents.Person;
+import org.mitre.synthea.world.concepts.ClinicianSpecialty;
 import org.mitre.synthea.world.concepts.HealthRecord.Code;
 import org.mitre.synthea.world.concepts.HealthRecord.Encounter;
 import org.mitre.synthea.world.concepts.HealthRecord.EncounterType;
@@ -33,8 +34,9 @@ public class DeathModule {
 
       Code causeOfDeath = (Code) person.attributes.get(Person.CAUSE_OF_DEATH);
 
-      Encounter deathCertification = person.encounterStart(time, EncounterType.WELLNESS);
-      deathCertification.codes.add(DEATH_CERTIFICATION);
+      Encounter encounter = EncounterModule.createEncounter(person, time, EncounterType.WELLNESS,
+          ClinicianSpecialty.GENERAL_PRACTICE, DEATH_CERTIFICATION);
+      encounter.reason = causeOfDeath;
 
       Observation codObs = person.record.observation(time, CAUSE_OF_DEATH_CODE.code, causeOfDeath);
       codObs.codes.add(CAUSE_OF_DEATH_CODE);

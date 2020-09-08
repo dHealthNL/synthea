@@ -1,10 +1,14 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.TimeZone;
 
 import org.mitre.synthea.engine.Generator;
+import org.mitre.synthea.engine.Module;
 import org.mitre.synthea.helpers.Config;
 
 /*
@@ -18,11 +22,15 @@ public class App {
   public static void usage() {
     System.out.println("Usage: run_synthea [options] [state [city]]");
     System.out.println("Options: [-s seed] [-cs clinicianSeed] [-p populationSize]");
+    System.out.println("         [-r referenceDate as YYYYMMDD]");
     System.out.println("         [-g gender] [-a minAge-maxAge]");
     System.out.println("         [-o overflowPopulation]");
     System.out.println("         [-m moduleFileWildcardList]");
     System.out.println("         [-c localConfigFilePath]");
     System.out.println("         [-d localModulesDirPath]");
+    System.out.println("         [-i initialPopulationSnapshotPath]");
+    System.out.println("         [-u updatedPopulationSnapshotPath]");
+    System.out.println("         [-t updateTimePeriodInDays]");
     System.out.println("         [--config* value]");
     System.out.println("          * any setting from src/main/resources/synthea.properties");
     System.out.println("Examples:");
@@ -64,6 +72,11 @@ public class App {
           } else if (currArg.equalsIgnoreCase("-cs")) {
             String value = argsQ.poll();
             options.clinicianSeed = Long.parseLong(value);
+          } else if (currArg.equalsIgnoreCase("-r")) {
+            String value = argsQ.poll();
+            SimpleDateFormat format = new SimpleDateFormat("YYYYMMDD");
+            format.setTimeZone(TimeZone.getTimeZone("UTC"));
+            options.referenceTime = format.parse(value).getTime();
           } else if (currArg.equalsIgnoreCase("-p")) {
             String value = argsQ.poll();
             options.population = Integer.parseInt(value);
@@ -104,11 +117,53 @@ public class App {
             String value = argsQ.poll();
             File localModuleDir = new File(value);
             if (localModuleDir.exists() && localModuleDir.isDirectory()) {
-              options.localModuleDir = localModuleDir;
+              Module.addModules(localModuleDir);
             } else {
               throw new FileNotFoundException(String.format(
                       "Specified local module directory (%s) is not a directory",
                       localModuleDir.getAbsolutePath()));
+            }
+          } else if (currArg.equalsIgnoreCase("-u")) {
+            String value = argsQ.poll();
+            failIfPhysiologyEnabled(currArg);
+            File file = new File(value);
+            try {
+              if (file.createNewFile()) {
+                options.updatedPopulationSnapshotPath = file;
+              } else {
+                throw new IOException("File exists");
+              }
+            } catch (IOException ex) {
+              throw new IOException(String.format("Unable to create snapshot file (%s): %s", 
+                      file.getAbsolutePath(), ex.getMessage()));
+            }
+          } else if (currArg.equalsIgnoreCase("-i")) {
+            String value = argsQ.poll();
+            failIfPhysiologyEnabled(currArg);
+            File file = new File(value);
+            try {
+              if (file.exists() && file.canRead()) {
+                options.initialPopulationSnapshotPath = file;
+              } else {
+                throw new IOException("File does not exist or is not readable");
+              }
+            } catch (IOException ex) {
+              throw new IOException(String.format("Unable to load snapshot file (%s): %s", 
+                      file.getAbsolutePath(), ex.getMessage()));
+            }
+          } else if (currArg.startsWith("-t")) {
+            String value = argsQ.poll();
+            try {
+              options.daysToTravelForward = Integer.parseInt(value);
+              if (options.daysToTravelForward < 1) {
+                throw new NumberFormatException("Must be a positive, non-zero integer");
+              }
+            } catch (NumberFormatException ex) {
+              throw new IllegalArgumentException(
+                      String.format(
+                              "Error in specified updateTimePeriodInDays (%s): %s",
+                              value,
+                              ex.getMessage()));
             }
           } else if (currArg.startsWith("--")) {
             String configSetting;
@@ -143,6 +198,18 @@ public class App {
     if (validArgs) {
       Generator generator = new Generator(options);
       generator.run();
+    }
+  }
+  
+  private static void failIfPhysiologyEnabled(String arg) {
+    if (Boolean.valueOf(Config.get("physiology.generators.enabled", "false"))) {
+      String errString = String.format(
+              "The %s command line switch %s - %s",
+              arg,
+              "cannot be used when physiology generators are enabled",
+              "set configuration option physiology.generators.enabled=false to use"
+      );
+      throw new IllegalArgumentException(errString);
     }
   }
 }

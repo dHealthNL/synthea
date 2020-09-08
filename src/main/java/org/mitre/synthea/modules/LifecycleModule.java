@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -23,13 +22,16 @@ import org.mitre.synthea.helpers.TrendingValueGenerator;
 import org.mitre.synthea.helpers.Utilities;
 import org.mitre.synthea.modules.BloodPressureValueGenerator.SysDias;
 import org.mitre.synthea.world.agents.Person;
+import org.mitre.synthea.world.concepts.BMI;
 import org.mitre.synthea.world.concepts.BiometricsConfig;
 import org.mitre.synthea.world.concepts.BirthStatistics;
 import org.mitre.synthea.world.concepts.GrowthChart;
 import org.mitre.synthea.world.concepts.GrowthChartEntry;
 import org.mitre.synthea.world.concepts.HealthRecord.Code;
 import org.mitre.synthea.world.concepts.HealthRecord.Encounter;
+import org.mitre.synthea.world.concepts.HealthRecord.EncounterType;
 import org.mitre.synthea.world.concepts.HealthRecord.Procedure;
+import org.mitre.synthea.world.concepts.PediatricGrowthTrajectory;
 import org.mitre.synthea.world.concepts.VitalSign;
 import org.mitre.synthea.world.geography.Location;
 
@@ -48,7 +50,8 @@ public final class LifecycleModule extends Module {
 
   public static final boolean appendNumbersToNames =
       Boolean.parseBoolean(Config.get("generate.append_numbers_to_person_names", "false"));
-  
+  private static final String COUNTRY_CODE = Config.get("generate.geography.country_code");
+
   private static RandomCollection<String> sexualOrientationData = loadSexualOrientationData();
 
   private static SimpleYML names = loadNames();
@@ -91,6 +94,10 @@ public final class LifecycleModule extends Module {
     return soDistribution;
   }
 
+  public Module clone() {
+    return this;
+  }
+
   @Override
   public boolean process(Person person, long time) {
     if (!person.alive(time)) {
@@ -125,12 +132,12 @@ public final class LifecycleModule extends Module {
   public static void birth(Person person, long time) {
     Map<String, Object> attributes = person.attributes;
 
-    attributes.put(Person.ID, UUID.randomUUID().toString());
+    attributes.put(Person.ID, person.randUUID().toString());
     attributes.put(Person.BIRTHDATE, time);
     String gender = (String) attributes.get(Person.GENDER);
     String language = (String) attributes.get(Person.FIRST_LANGUAGE);
-    String firstName = fakeFirstName(gender, language, person.random);
-    String lastName = fakeLastName(language, person.random);
+    String firstName = fakeFirstName(gender, language, person);
+    String lastName = fakeLastName(language, person);
     if (appendNumbersToNames) {
       firstName = addHash(firstName);
       lastName = addHash(lastName);
@@ -139,15 +146,15 @@ public final class LifecycleModule extends Module {
     attributes.put(Person.LAST_NAME, lastName);
     attributes.put(Person.NAME, firstName + " " + lastName);
 
-    String motherFirstName = fakeFirstName("F", language, person.random);
-    String motherLastName = fakeLastName(language, person.random);
+    String motherFirstName = fakeFirstName("F", language, person);
+    String motherLastName = fakeLastName(language, person);
     if (appendNumbersToNames) {
       motherFirstName = addHash(motherFirstName);
       motherLastName = addHash(motherLastName);
     }
     attributes.put(Person.NAME_MOTHER, motherFirstName + " " + motherLastName);
     
-    String fatherFirstName = fakeFirstName("M", language, person.random);
+    String fatherFirstName = fakeFirstName("M", language, person);
     if (appendNumbersToNames) {
       fatherFirstName = addHash(fatherFirstName);
     }
@@ -176,10 +183,10 @@ public final class LifecycleModule extends Module {
       person.attributes.put(Person.ZIP, location.getZipCode(city, person));
       String[] birthPlace;
       if ("english".equalsIgnoreCase((String) attributes.get(Person.FIRST_LANGUAGE))) {
-        birthPlace = location.randomBirthPlace(person.random);
+        birthPlace = location.randomBirthPlace(person);
       } else {
         birthPlace = location.randomBirthplaceByLanguage(
-            person.random, (String) person.attributes.get(Person.FIRST_LANGUAGE));
+            person, (String) person.attributes.get(Person.FIRST_LANGUAGE));
       }
       attributes.put(Person.BIRTH_CITY, birthPlace[0]);
       attributes.put(Person.BIRTH_STATE, birthPlace[1]);
@@ -189,17 +196,19 @@ public final class LifecycleModule extends Module {
     }
     
     boolean hasStreetAddress2 = person.rand() < 0.5;
-    attributes.put(Person.ADDRESS, fakeAddress(hasStreetAddress2, person.random));
+    attributes.put(Person.ADDRESS, fakeAddress(hasStreetAddress2, person));
 
     attributes.put(Person.ACTIVE_WEIGHT_MANAGEMENT, false);
     // TODO: Why are the percentiles a vital sign? Sounds more like an attribute?
     double heightPercentile = person.rand();
-    double weightPercentile = person.rand();
+    PediatricGrowthTrajectory pgt = new PediatricGrowthTrajectory(person.seed, time);
+    double weightPercentile = pgt.reverseWeightPercentile(gender, heightPercentile);
     person.setVitalSign(VitalSign.HEIGHT_PERCENTILE, heightPercentile);
     person.setVitalSign(VitalSign.WEIGHT_PERCENTILE, weightPercentile);
+    person.attributes.put(Person.GROWTH_TRAJECTORY, pgt);
 
     // Temporarily generate a mother
-    Person mother = new Person(person.random.nextLong());
+    Person mother = new Person(person.randLong());
     mother.attributes.put(Person.GENDER, "F");
     mother.attributes.put("pregnant", true);
     mother.attributes.put(Person.RACE, person.attributes.get(Person.RACE));
@@ -226,7 +235,7 @@ public final class LifecycleModule extends Module {
     grow(person, time); // set initial height and weight from percentiles
     calculateVitalSigns(person, time);  // Set initial values for many vital signs.
 
-    String orientation = sexualOrientationData.next(person.random);
+    String orientation = sexualOrientationData.next(person);
     attributes.put(Person.SEXUAL_ORIENTATION, orientation);
 
     // Setup vital signs which follow the generator approach
@@ -257,11 +266,11 @@ public final class LifecycleModule extends Module {
    * Generate a first name appropriate for a given gender and language.
    * @param gender Gender of the name, "M" or "F"
    * @param language Origin language of the name, "english", "spanish"
-   * @param random Random number generator to use.
+   * @param person person to generate a name for.
    * @return First name.
    */
   @SuppressWarnings("unchecked")
-  public static String fakeFirstName(String gender, String language, Random random) {
+  public static String fakeFirstName(String gender, String language, Person person) {
     List<String> choices;
     if ("spanish".equalsIgnoreCase(language)) {
       choices = (List<String>) names.get("spanish." + gender);
@@ -269,17 +278,17 @@ public final class LifecycleModule extends Module {
       choices = (List<String>) names.get("english." + gender);
     }
     // pick a random item from the list
-    return choices.get(random.nextInt(choices.size()));
+    return choices.get(person.randInt(choices.size()));
   }
   
   /**
    * Generate a surname appropriate for a given language.
    * @param language Origin language of the name, "english", "spanish"
-   * @param random Random number generator to use.
+   * @param person person to generate a name for.
    * @return Surname or Family Name.
    */
   @SuppressWarnings("unchecked")
-  public static String fakeLastName(String language, Random random) {
+  public static String fakeLastName(String language, Person person) {
     List<String> choices;
     if ("spanish".equalsIgnoreCase(language)) {
       choices = (List<String>) names.get("spanish.family");
@@ -287,30 +296,30 @@ public final class LifecycleModule extends Module {
       choices = (List<String>) names.get("english.family");
     }
     // pick a random item from the list
-    return choices.get(random.nextInt(choices.size()));
+    return choices.get(person.randInt(choices.size()));
   }
 
   /**
    * Generate a Street Address.
    * @param includeLine2 Whether or not the address should have a second line,
    *     which can take the form of an apartment, unit, or suite number.
-   * @param random Random number generator to use.
+   * @param person person to generate an address for.
    * @return First name.
    */
   @SuppressWarnings("unchecked")
-  public static String fakeAddress(boolean includeLine2, Random random) {
-    int number = random.nextInt(1000) + 100;
+  public static String fakeAddress(boolean includeLine2, Person person) {
+    int number = person.randInt(1000) + 100;
     List<String> n = (List<String>)names.get("english.family");
     // for now just use family names as the street name. 
     // could expand with a few more but probably not worth it
-    String streetName = n.get(random.nextInt(n.size()));
+    String streetName = n.get(person.randInt(n.size()));
     List<String> a = (List<String>)names.get("street.type");
-    String streetType = a.get(random.nextInt(a.size()));
+    String streetType = a.get(person.randInt(a.size()));
     
     if (includeLine2) {
-      int addtlNum = random.nextInt(100);
+      int addtlNum = person.randInt(100);
       List<String> s = (List<String>)names.get("street.secondary");
-      String addtlType = s.get(random.nextInt(s.size()));
+      String addtlType = s.get(person.randInt(s.size()));
       return number + " " + streetName + " " + streetType + " " + addtlType + " " + addtlNum;
     } else {
       return number + " " + streetName + " " + streetType;
@@ -346,7 +355,6 @@ public final class LifecycleModule extends Module {
     int newAgeMos = person.ageInMonths(time);
     person.attributes.put(AGE, newAge);
     person.attributes.put(AGE_MONTHS, newAgeMos);
-
     switch (newAge) {
       case 16:
         // driver's license
@@ -376,6 +384,16 @@ public final class LifecycleModule extends Module {
             person.attributes.put(Person.IDENTIFIER_PASSPORT, identifierPassport);
           }
         }
+        if (person.attributes.get("veteran") != null) {
+          if (person.attributes.get("veteran_provider_reset") == null) {
+            // reset providers for veterans, they'll switch to VA facilities
+            person.attributes.remove(Person.CURRENTPROVIDER);
+            for (EncounterType type : EncounterType.values()) {
+              person.attributes.remove(Person.PREFERREDYPROVIDER + type);
+            }
+            person.attributes.put("veteran_provider_reset", true);
+          }
+        }
         break;
       case 27:
         // get married
@@ -388,7 +406,7 @@ public final class LifecycleModule extends Module {
               person.attributes.put(Person.MAIDEN_NAME, person.attributes.get(Person.LAST_NAME));
               String firstName = ((String) person.attributes.get(Person.FIRST_NAME));
               String language = (String) person.attributes.get(Person.FIRST_LANGUAGE);
-              String newLastName = fakeLastName(language, person.random);
+              String newLastName = fakeLastName(language, person);
               if (appendNumbersToNames) {
                 newLastName = addHash(newLastName);
               }
@@ -450,7 +468,7 @@ public final class LifecycleModule extends Module {
 
     person.setVitalSign(VitalSign.HEIGHT, height);
     person.setVitalSign(VitalSign.WEIGHT, weight);
-    double bmi = bmi(height, weight);
+    double bmi = BMI.calculate(height, weight);
     person.setVitalSign(VitalSign.BMI, bmi);
 
     if (age <= 3) {
@@ -485,25 +503,35 @@ public final class LifecycleModule extends Module {
 
   private static double adjustWeight(Person person, long time) {
     double weight = person.getVitalSign(VitalSign.WEIGHT, time);
-    Object weightManagement = person.attributes.get(Person.ACTIVE_WEIGHT_MANAGEMENT);
-    // If there is active weight management,
-    // changing of weight will be handled by the WeightLossModule
-    if (weightManagement != null && ! (boolean) weightManagement) {
-      int age = person.ageInYears(time);
-      if (age < 20) {
-        // follow growth charts
-        String gender = (String) person.attributes.get(Person.GENDER);
-        int ageInMonths = person.ageInMonths(time);
-        weight = lookupGrowthChart("weight", gender, ageInMonths,
-            person.getVitalSign(VitalSign.WEIGHT_PERCENTILE, time));
-      } else if (age <= ADULT_MAX_WEIGHT_AGE) {
-        // getting older and fatter
-        double adultWeightGain = person.rand(ADULT_WEIGHT_GAIN_RANGE);
-        weight += adultWeightGain;
-      } else if (age >= GERIATRIC_WEIGHT_LOSS_AGE) {
-        // getting older and wasting away
-        double geriatricWeightLoss = person.rand(GERIATRIC_WEIGHT_LOSS_RANGE);
-        weight -= geriatricWeightLoss;
+    String gender = (String) person.attributes.get(Person.GENDER);
+    double heightPercentile = person.getVitalSign(VitalSign.HEIGHT_PERCENTILE, time);
+    PediatricGrowthTrajectory pgt =
+        (PediatricGrowthTrajectory) person.attributes.get(Person.GROWTH_TRAJECTORY);
+    int age = person.ageInYears(time);
+    int ageInMonths = person.ageInMonths(time);
+    if (age < 3 && pgt.beforeInitialSample(time)) {
+      // follow growth charts
+      weight = lookupGrowthChart("weight", gender, ageInMonths,
+          person.getVitalSign(VitalSign.WEIGHT_PERCENTILE, time));
+    } else if (age < 20) {
+      double currentBMI = pgt.currentBMI(person, time);
+      double height = growthChart.get(GrowthChart.ChartType.HEIGHT).lookUp(ageInMonths,
+          gender, heightPercentile);
+      weight = BMI.weightForHeightAndBMI(height, currentBMI);
+    } else {
+      Object weightManagement = person.attributes.get(Person.ACTIVE_WEIGHT_MANAGEMENT);
+      // If there is active weight management,
+      // changing of weight will be handled by the WeightLossModule
+      if (weightManagement != null && ! (boolean) weightManagement) {
+        if (age <= ADULT_MAX_WEIGHT_AGE) {
+          // getting older and fatter
+          double adultWeightGain = person.rand(ADULT_WEIGHT_GAIN_RANGE);
+          weight += adultWeightGain;
+        } else if (age >= GERIATRIC_WEIGHT_LOSS_AGE) {
+          // getting older and wasting away
+          double geriatricWeightLoss = person.rand(GERIATRIC_WEIGHT_LOSS_RANGE);
+          weight -= geriatricWeightLoss;
+        }
       }
     }
     return weight;
@@ -550,10 +578,6 @@ public final class LifecycleModule extends Module {
    */
   public static double percentileForBMI(double bmi, String gender, int ageInMonths) {
     return growthChart.get(GrowthChart.ChartType.BMI).percentileFor(ageInMonths, gender, bmi);
-  }
-
-  public static double bmi(double heightCM, double weightKG) {
-    return (weightKG / ((heightCM / 100.0) * (heightCM / 100.0)));
   }
 
   /**
@@ -1161,7 +1185,7 @@ public final class LifecycleModule extends Module {
     Attributes.inventory(attributes, m, Person.ADDRESS, false, true, null);
     Attributes.inventory(attributes, m, Person.ALCOHOLIC, false, true, "Boolean");
     Attributes.inventory(attributes, m, Person.BIRTH_CITY, false, true, "Bedford");
-    Attributes.inventory(attributes, m, Person.BIRTH_COUNTRY, false, true, "USA");
+    Attributes.inventory(attributes, m, Person.BIRTH_COUNTRY, false, true, COUNTRY_CODE);
     Attributes.inventory(attributes, m, Person.BIRTH_STATE, false, true, "Massachusetts");
     Attributes.inventory(attributes, m, Person.BIRTHDATE, false, true, null);
     Attributes.inventory(attributes, m, Person.BIRTHPLACE, false, true, "Boston");

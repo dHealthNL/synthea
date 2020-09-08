@@ -22,6 +22,7 @@ import org.hl7.fhir.r4.model.IntegerType;
 import org.hl7.fhir.r4.model.Organization;
 
 import org.mitre.synthea.helpers.Config;
+import org.mitre.synthea.helpers.RandomNumberGenerator;
 import org.mitre.synthea.world.agents.Provider;
 
 public abstract class HospitalExporterR4 {
@@ -30,7 +31,10 @@ public abstract class HospitalExporterR4 {
 
   private static final String SYNTHEA_URI = "http://synthetichealth.github.io/synthea/";
 
-  public static void export(long stop) {
+  /**
+   * Export the hospital in FHIR R4 format.
+   */
+  public static void export(RandomNumberGenerator rand, long stop) {
     if (Boolean.parseBoolean(Config.get("exporter.hospital.fhir.export"))) {
 
       Bundle bundle = new Bundle();
@@ -45,7 +49,7 @@ public abstract class HospitalExporterR4 {
         int totalEncounters = utilization.column(Provider.ENCOUNTERS).values().stream()
             .mapToInt(ai -> ai.get()).sum();
         if (totalEncounters > 0) {
-          BundleEntryComponent entry = FhirR4.provider(bundle, h);
+          BundleEntryComponent entry = FhirR4.provider(rand, bundle, h);
           addHospitalExtensions(h, (Organization) entry.getResource());
         }
       }
@@ -69,6 +73,9 @@ public abstract class HospitalExporterR4 {
     }
   }
 
+  /**
+   * Add FHIR extensions to capture additional information.
+   */
   public static void addHospitalExtensions(Provider h, Organization organizationResource) {
     Table<Integer, String, AtomicInteger> utilization = h.getUtilization();
     // calculate totals for utilization

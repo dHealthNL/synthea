@@ -6,6 +6,9 @@ import com.google.gson.internal.LinkedTreeMap;
 
 import java.awt.geom.Point2D;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -18,6 +21,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.mitre.synthea.helpers.Config;
+import org.mitre.synthea.helpers.RandomNumberGenerator;
 import org.mitre.synthea.helpers.SimpleCSV;
 import org.mitre.synthea.helpers.Utilities;
 import org.mitre.synthea.modules.LifecycleModule;
@@ -32,7 +36,7 @@ import org.mitre.synthea.world.geography.Location;
 import org.mitre.synthea.world.geography.quadtree.QuadTree;
 import org.mitre.synthea.world.geography.quadtree.QuadTreeElement;
 
-public class Provider implements QuadTreeElement {
+public class Provider implements QuadTreeElement, Serializable {
 
   public static final String ENCOUNTERS = "encounters";
   public static final String PROCEDURES = "procedures";
@@ -58,7 +62,7 @@ public class Provider implements QuadTreeElement {
   private static IProviderFinder providerFinder = buildProviderFinder();
 
   public Map<String, Object> attributes;
-  public String uuid;
+  private String uuid;
   public String id;
   public String name;
   private Location location;
@@ -75,12 +79,46 @@ public class Provider implements QuadTreeElement {
   public ArrayList<EncounterType> servicesProvided;
   public Map<String, ArrayList<Clinician>> clinicianMap;
   // row: year, column: type, value: count
-  private Table<Integer, String, AtomicInteger> utilization;
+  private transient Table<Integer, String, AtomicInteger> utilization;
 
+  /**
+   * Java Serialization support for the utilization field.
+   * @param oos stream to write to
+   */
+  private void writeObject(ObjectOutputStream oos) throws IOException {
+    oos.defaultWriteObject();
+    ArrayList<Payer.UtilizationBean> entryUtilizationElements = null;
+    if (utilization != null) {
+      entryUtilizationElements = new ArrayList<>(utilization.size());
+      for (Table.Cell<Integer, String, AtomicInteger> cell: utilization.cellSet()) {
+        entryUtilizationElements.add(
+                new Payer.UtilizationBean(cell.getRowKey(), cell.getColumnKey(), cell.getValue()));
+      }
+    }
+    oos.writeObject(entryUtilizationElements);
+  }
+
+  /**
+   * Java Serialization support for the utilization field.
+   * @param ois stream to read from
+   */
+  private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
+    ois.defaultReadObject();
+    ArrayList<Payer.UtilizationBean> entryUtilizationElements = 
+            (ArrayList<Payer.UtilizationBean>)ois.readObject();
+    if (entryUtilizationElements != null) {
+      this.utilization = HashBasedTable.create();
+      for (Payer.UtilizationBean u: entryUtilizationElements) {
+        this.utilization.put(u.year, u.type, u.count);
+      }
+    }
+  }
+  
   /**
    * Create a new Provider with no information.
    */
   public Provider() {
+    // the uuid field is reinitialized by csvLineToProvider
     uuid = UUID.randomUUID().toString();
     attributes = new LinkedTreeMap<>();
     revenue = 0.0;
@@ -140,11 +178,13 @@ public class Provider implements QuadTreeElement {
   }
 
   private synchronized void increment(Integer year, String key) {
-    if (!utilization.contains(year, key)) {
-      utilization.put(year, key, new AtomicInteger(0));
-    }
+    if (utilization != null) { // TODO remove once utilization stats are made serializable
+      if (!utilization.contains(year, key)) {
+        utilization.put(year, key, new AtomicInteger(0));
+      }
 
-    utilization.get(year, key).incrementAndGet();
+      utilization.get(year, key).incrementAndGet();
+    }
   }
 
   public Table<Integer, String, AtomicInteger> getUtilization() {
@@ -240,6 +280,7 @@ public class Provider implements QuadTreeElement {
     providerList.clear();
     statesLoaded.clear();
     providerMap = generateQuadTree();
+    providerFinder = buildProviderFinder();
     loaded = 0;
   }
 
@@ -269,6 +310,7 @@ public class Provider implements QuadTreeElement {
         String hospitalFile = Config.get("generate.providers.hospitals.default_file");
         loadProviders(location, hospitalFile, servicesProvided, clinicianSeed);
 
+        servicesProvided.add(EncounterType.WELLNESS);
         String vaFile = Config.get("generate.providers.veterans.default_file");
         loadProviders(location, vaFile, servicesProvided, clinicianSeed);
 
@@ -399,7 +441,8 @@ public class Provider implements QuadTreeElement {
       long clinicianIdentifier, Provider provider) {
     Clinician clinician = null;
     try {
-      Demographics city = location.randomCity(clinicianRand);
+      Person doc = new Person(clinicianIdentifier);
+      Demographics city = location.randomCity(doc);
       Map<String, Object> out = new HashMap<>();
 
       String race = city.pickRace(clinicianRand);
@@ -424,8 +467,8 @@ public class Provider implements QuadTreeElement {
       clinician.attributes.put(Person.ZIP, provider.zip);
       clinician.attributes.put(Person.COORDINATE, provider.coordinates);
 
-      String firstName = LifecycleModule.fakeFirstName(gender, language, clinician.random);
-      String lastName = LifecycleModule.fakeLastName(language, clinician.random);
+      String firstName = LifecycleModule.fakeFirstName(gender, language, doc);
+      String lastName = LifecycleModule.fakeLastName(language, doc);
 
       if (LifecycleModule.appendNumbersToNames) {
         firstName = LifecycleModule.addHash(firstName);
@@ -446,13 +489,13 @@ public class Provider implements QuadTreeElement {
 
   /**
    * Randomly chooses a clinician out of a given clinician list.
-   * @param specialty - the specialty to choose from
-   * @param random - random to help choose clinician
+   * @param specialty - the specialty to choose from.
+   * @param rand - random number generator.
    * @return A clinician with the required specialty.
    */
-  public Clinician chooseClinicianList(String specialty, Random random) {
+  public Clinician chooseClinicianList(String specialty, RandomNumberGenerator rand) {
     ArrayList<Clinician> clinicians = this.clinicianMap.get(specialty);
-    Clinician doc = clinicians.get(random.nextInt(clinicians.size()));
+    Clinician doc = clinicians.get(rand.randInt(clinicians.size()));
     doc.incrementEncounters();
     return doc;
   }

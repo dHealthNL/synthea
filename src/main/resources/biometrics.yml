@@ -16,7 +16,7 @@ metabolic:
       systolic: [100,139] # mmHg
       diastolic: [70,89]  # mmHg
     hypertensive:
-      systolic: [140,200] # mmHg
+      systolic: [140,160,200] # mmHg
       diastolic: [90,120] # mmHg
   lipid_panel: #https://www.nlm.nih.gov/medlineplus/magazine/issues/summer12/articles/summer12pg6-7.html
     cholesterol:   [160,200,239,259,279,300] # mg/dL
@@ -94,7 +94,7 @@ weightloss:
   # BMI at which someone will start to consider losing weight for patients over 20
   start_bmi: 30
   # BMI percentile at which someone will start to consider losing weight for patients under 20
-  start_percentile: 0.85
+  start_percentile: 0.95
 
   #https://www.cdc.gov/mmwr/volumes/67/wr/mm6741a10.htm?s_cid=mm6741a10_w
   start_prob: 0.493

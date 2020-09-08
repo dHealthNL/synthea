@@ -141,6 +141,9 @@ public class FhirDstu2 {
   protected static boolean TRANSACTION_BUNDLE =
       Boolean.parseBoolean(Config.get("exporter.fhir.transaction_bundle"));
 
+  protected static boolean EXPORT_CLAIMS =
+      Boolean.parseBoolean(Config.get("exporter.claims"));
+
   private static final String COUNTRY_CODE = Config.get("generate.geography.country_code");
 
   @SuppressWarnings("rawtypes")
@@ -233,17 +236,20 @@ public class FhirDstu2 {
       for (ImagingStudy imagingStudy : encounter.imagingStudies) {
         imagingStudy(person, personEntry, bundle, encounterEntry, imagingStudy);
       }
-      
+
       for (HealthRecord.Device device : encounter.devices) {
         device(person, personEntry, bundle, device);
       }
-      
+
       for (HealthRecord.Supply supply : encounter.supplies) {
         supplyDelivery(person, personEntry, bundle, supply, encounter);
       }
 
       // one claim per encounter
-      encounterClaim(person, personEntry, bundle, encounterEntry, encounter.claim);
+      if (EXPORT_CLAIMS) {
+        encounterClaim(person, personEntry, bundle, encounterEntry, encounter.claim);
+      }
+
     }
     return bundle;
   }
@@ -939,31 +945,31 @@ public class FhirDstu2 {
           + value.getClass().toString() + "; " + value);
     }
   }
-  
+
   /**
    * Maps a Synthea internal SampledData object to the FHIR standard SampledData
    * representation.
-   * 
+   *
    * @param value Synthea internal SampledData instance
    * @param unit Observation unit value
    * @return
    */
   static SampledDataDt mapValueToSampledData(
       Components.SampledData value, String unit) {
-    
+
     SampledDataDt recordData = new SampledDataDt();
-    
+
     SimpleQuantityDt origin = new SimpleQuantityDt();
     origin.setValue(new BigDecimal(value.originValue))
       .setCode(unit).setSystem(UNITSOFMEASURE_URI)
       .setUnit(unit);
-    
+
     recordData.setOrigin(origin);
-    
+
     // Use the period from the first series. They should all be the same.
     // FHIR output is milliseconds so we need to convert from TimeSeriesData seconds.
     recordData.setPeriod(value.series.get(0).getPeriod() * 1000);
-    
+
     // Set optional fields if they were provided
     if (value.factor != null) {
       recordData.setFactor(value.factor);
@@ -974,11 +980,11 @@ public class FhirDstu2 {
     if (value.upperLimit != null) {
       recordData.setUpperLimit(value.upperLimit);
     }
-    
+
     recordData.setDimensions(value.series.size());
-    
+
     recordData.setData(ExportHelper.sampledDataToValueString(value));
-    
+
     return recordData;
   }
 
@@ -1147,8 +1153,10 @@ public class FhirDstu2 {
     }
 
     Entry medicationEntry = newEntry(rand, bundle, medicationResource);
-    // create new claim for medication
-    medicationClaim(rand, personEntry, bundle, encounterEntry, medication.claim, medicationEntry);
+    if (EXPORT_CLAIMS) {
+      // create new claim for medication
+      medicationClaim(rand, personEntry, bundle, encounterEntry, medication.claim, medicationEntry);
+    }
 
     // Create new administration for medication, if needed
     if (medication.administration) {
@@ -1160,7 +1168,7 @@ public class FhirDstu2 {
 
   /**
    * Add a MedicationAdministration if needed for the given medication.
-   * 
+   *
    * @param rand              Source of randomness to use when generating ids etc
    * @param personEntry       The Entry for the Person
    * @param bundle            Bundle to add the MedicationAdministration to
@@ -1450,7 +1458,7 @@ public class FhirDstu2 {
 
     return newEntry(rand, bundle, imagingStudyResource);
   }
-  
+
   /**
    * Map the given Media element to a FHIR Media resource, and add it to the given Bundle.
    *
@@ -1473,17 +1481,17 @@ public class FhirDstu2 {
     Attachment content = (Attachment) obs.value;
     ca.uhn.fhir.model.dstu2.composite.AttachmentDt contentResource =
         new ca.uhn.fhir.model.dstu2.composite.AttachmentDt();
-    
+
     contentResource.setContentType(content.contentType);
     contentResource.setLanguage(content.language);
-    
+
     if (content.data != null) {
       ca.uhn.fhir.model.primitive.Base64BinaryDt data =
           new ca.uhn.fhir.model.primitive.Base64BinaryDt();
       data.setValueAsString(content.data);
       contentResource.setData(data);
     }
-    
+
     contentResource.setUrl(content.url);
     contentResource.setSize(content.size);
     contentResource.setTitle(content.title);
@@ -1493,10 +1501,10 @@ public class FhirDstu2 {
       hash.setValueAsString(content.hash);
       contentResource.setHash(hash);
     }
-    
+
     mediaResource.setWidth(content.width);
     mediaResource.setHeight(content.height);
-    
+
     mediaResource.setContent(contentResource);
 
     return newEntry(rand, bundle, mediaResource);
@@ -1545,7 +1553,7 @@ public class FhirDstu2 {
    */
   private static Entry supplyDelivery(RandomNumberGenerator rand, Entry personEntry, Bundle bundle,
       HealthRecord.Supply supply, Encounter encounter) {
-   
+
     SupplyDelivery supplyResource = new SupplyDelivery();
     supplyResource.setStatus(SupplyDeliveryStatusEnum.DELIVERED);
     supplyResource.setPatient(new ResourceReferenceDt(personEntry.getFullUrl()));
@@ -1568,10 +1576,10 @@ public class FhirDstu2 {
     supplyResource.setQuantity(new SimpleQuantityDt(supply.quantity));
 
     supplyResource.setTime((DateTimeDt) convertFhirDateTime(supply.start, true));
-    
+
     return newEntry(rand, bundle, supplyResource);
   }
-  
+
   /**
    * Map the Provider into a FHIR Organization resource, and add it to the given Bundle.
    *
@@ -1653,7 +1661,7 @@ public class FhirDstu2 {
 
   /**
    * Map the JsonObject into a FHIR Goal resource, and add it to the given Bundle.
-   * 
+   *
    * @param rand Source of randomness to use when generating ids etc
    * @param bundle The Bundle to add to
    * @param goalStatus The GoalStatus

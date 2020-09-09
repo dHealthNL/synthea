@@ -6,7 +6,10 @@ import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -77,7 +80,7 @@ public class Generator implements RandomNumberGenerator {
    * module. Use "-m filename" on the command line to filter which modules get loaded.
    */
   Predicate<String> modulePredicate;
-  
+
   private static final String TARGET_AGE = "target_age";
 
   /**
@@ -113,7 +116,7 @@ public class Generator implements RandomNumberGenerator {
     /** Reference Time when to start Synthea. By default equal to the current system time. */
     public long referenceTime = seed;
   }
-  
+
   /**
    * Create a Generator, using all default settings.
    */
@@ -124,7 +127,7 @@ public class Generator implements RandomNumberGenerator {
   /**
    * Create a Generator, with the given population size.
    * All other settings are left as defaults.
-   * 
+   *
    * @param population Target population size
    */
   public Generator(int population) {
@@ -132,11 +135,11 @@ public class Generator implements RandomNumberGenerator {
     options.population = population;
     init();
   }
-  
+
   /**
    * Create a Generator, with the given population size and seed.
    * All other settings are left as defaults.
-   * 
+   *
    * @param population Target population size
    * @param seed Seed used for randomness
    */
@@ -155,7 +158,7 @@ public class Generator implements RandomNumberGenerator {
   public Generator(GeneratorOptions o) {
     this(o, new Exporter.ExporterRuntimeOptions());
   }
-  
+
   /**
    * Create a Generator, with the given options.
    * @param o Desired configuration options
@@ -201,6 +204,14 @@ public class Generator implements RandomNumberGenerator {
     this.random = new Random(options.seed);
     this.timestep = Long.parseLong(Config.get("generate.timestep"));
     this.stop = System.currentTimeMillis();
+    try {
+      SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+      Date date = sdf.parse(Config.get("generate.enddate"));
+      System.out.println("Setting end date based on configuration to: " + date);
+      this.stop = date.getTime();
+    } catch (ParseException e) {
+      // Ignore the parsing error, this means that the date is not valid and we use the default stop date
+    }
     this.referenceTime = options.referenceTime;
 
     this.location = new Location(options.state, options.city);
@@ -236,9 +247,9 @@ public class Generator implements RandomNumberGenerator {
     Payer.loadPayers(location);
     // ensure modules load early
     List<String> coreModuleNames = getModuleNames(Module.getModules(path -> false));
-    List<String> moduleNames = getModuleNames(Module.getModules(modulePredicate)); 
+    List<String> moduleNames = getModuleNames(Module.getModules(modulePredicate));
     Costs.loadCostData(); // ensure cost data loads early
-    
+
     String locationName;
     if (options.city == null) {
       locationName = options.state;
@@ -279,7 +290,7 @@ public class Generator implements RandomNumberGenerator {
             .map(m -> m.name)
             .collect(Collectors.toList());
   }
-  
+
   /**
    * Generate the population, using the currently set configuration settings.
    */
@@ -300,12 +311,12 @@ public class Generator implements RandomNumberGenerator {
       if (initialPopulation != null && initialPopulation.size() > 0) {
         // default is to run until current system time.
         if (options.daysToTravelForward > 0) {
-          stop = initialPopulation.get(0).lastUpdated 
+          stop = initialPopulation.get(0).lastUpdated
                   + Utilities.convertTime("days", options.daysToTravelForward);
         }
         for (int i = 0; i < initialPopulation.size(); i++) {
           final int index = i;
-          final Person p = initialPopulation.get(i);        
+          final Person p = initialPopulation.get(i);
           threadPool.submit(() -> updateRecordExportPerson(p, index));
         }
       }
@@ -355,14 +366,14 @@ public class Generator implements RandomNumberGenerator {
       metrics.printStats(totalGeneratedPopulation.get(), Module.getModules(getModulePredicate()));
     }
   }
-  
+
   /**
    * Generate a completely random Person. The returned person will be alive at the end of the
    * simulation. This means that if in the course of the simulation the person dies, a new person
-   * will be started to replace them. 
+   * will be started to replace them.
    * The seed used to generate the person is randomized as well.
    * Note that this method is only used by unit tests.
-   * 
+   *
    * @param index Target index in the whole set of people to generate
    * @return generated Person
    */
@@ -371,14 +382,14 @@ public class Generator implements RandomNumberGenerator {
     long personSeed = UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE;
     return generatePerson(index, personSeed);
   }
-  
+
   /**
    * Generate a random Person, from the given seed. The returned person will be alive at the end of
    * the simulation. This means that if in the course of the simulation the person dies, a new
    * person will be started to replace them. Note also that if the person dies, the seed to produce
    * them can't be re-used (otherwise the new person would die as well) so a new seed is picked,
    * based on the given seed.
-   * 
+   *
    * @param index
    *          Target index in the whole set of people to generate
    * @param personSeed
@@ -455,7 +466,7 @@ public class Generator implements RandomNumberGenerator {
     }
     return person;
   }
-  
+
   /**
    * Update person record to stop time, record the entry and export record.
    */
@@ -497,7 +508,7 @@ public class Generator implements RandomNumberGenerator {
 
     DeathModule.process(person, time);
   }
-  
+
   /**
    * Create a new person and update them until until Generator.stop or
    * they die, whichever comes sooner.
@@ -516,10 +527,10 @@ public class Generator implements RandomNumberGenerator {
     person.currentModules = Module.getModules(modulePredicate);
 
     updatePerson(person);
-    
+
     return person;
   }
-  
+
   /**
    * Create a set of random demographics.
    * @param random The random number generator to use.
@@ -530,7 +541,7 @@ public class Generator implements RandomNumberGenerator {
     Map<String, Object> demoAttributes = pickDemographics(random, city);
     return demoAttributes;
   }
-  
+
   /**
    * Record the person using whatever tracking mechanisms are currently configured.
    * @param person the person to record
@@ -540,7 +551,7 @@ public class Generator implements RandomNumberGenerator {
   public void recordPerson(Person person, int index) {
     long finishTime = person.lastUpdated + timestep;
     boolean isAlive = person.alive(finishTime);
-    
+
     if (database != null) {
       database.store(person);
     }
@@ -566,7 +577,7 @@ public class Generator implements RandomNumberGenerator {
   }
 
   private synchronized void writeToConsole(Person person, int index, long time, boolean isAlive) {
-    // this is synchronized to ensure all lines for a single person are always printed 
+    // this is synchronized to ensure all lines for a single person are always printed
     // consecutively
     String deceased = isAlive ? "" : "DECEASED";
     System.out.format("%d -- %s (%d y/o %s) %s, %s %s\n", index + 1,
@@ -596,7 +607,7 @@ public class Generator implements RandomNumberGenerator {
     out.put(Person.CITY, city.city);
     out.put(Person.STATE, city.state);
     out.put("county", city.county);
-    
+
     String race = city.pickRace(random);
     out.put(Person.RACE, race);
     String ethnicity = city.pickEthnicity(random);
@@ -641,7 +652,7 @@ public class Generator implements RandomNumberGenerator {
 
     int targetAge;
     if (options.ageSpecified) {
-      targetAge = 
+      targetAge =
           (int) (options.minAge + ((options.maxAge - options.minAge) * random.nextDouble()));
     } else {
       targetAge = city.pickAge(random);
@@ -650,22 +661,22 @@ public class Generator implements RandomNumberGenerator {
 
     long birthdate = birthdateFromTargetAge(targetAge, random);
     out.put(Person.BIRTHDATE, birthdate);
-    
+
     return out;
   }
-  
+
   private long birthdateFromTargetAge(long targetAge, Random random) {
     long earliestBirthdate = referenceTime - TimeUnit.DAYS.toMillis((targetAge + 1) * 365L + 1);
     long latestBirthdate = referenceTime - TimeUnit.DAYS.toMillis(targetAge * 365L);
-    return 
+    return
         (long) (earliestBirthdate + ((latestBirthdate - earliestBirthdate) * random.nextDouble()));
   }
-  
+
   private Predicate<String> getModulePredicate() {
     if (options.enabledModules == null) {
       return path -> true;
     }
-    FilenameFilter filenameFilter = new WildcardFileFilter(options.enabledModules, 
+    FilenameFilter filenameFilter = new WildcardFileFilter(options.enabledModules,
         IOCase.INSENSITIVE);
     return path -> filenameFilter.accept(null, path);
   }
@@ -711,12 +722,12 @@ public class Generator implements RandomNumberGenerator {
   public long randLong() {
     return random.nextLong();
   }
-  
+
   /**
    * Return a random UUID.
    */
   public UUID randUUID() {
     return new UUID(randLong(), randLong());
   }
-  
+
 }

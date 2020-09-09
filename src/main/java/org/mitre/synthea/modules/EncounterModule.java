@@ -21,6 +21,9 @@ public final class EncounterModule extends Module {
   public static final String ACTIVE_WELLNESS_ENCOUNTER = "active_wellness_encounter";
   public static final String ACTIVE_URGENT_CARE_ENCOUNTER = "active_urgent_care_encounter";
   public static final String ACTIVE_EMERGENCY_ENCOUNTER = "active_emergency_encounter";
+
+  private static final boolean ENABLE_WELLNESS =
+    Boolean.parseBoolean(Config.get("generator.wellnessencounter.enabled"));
   /**
    * These are thresholds for patients to seek symptom-driven care - they'll go to
    * the appropriate provider based on which threshold they meet.
@@ -72,12 +75,16 @@ public final class EncounterModule extends Module {
     // add a wellness encounter if this is the right time
     if (person.record.timeSinceLastWellnessEncounter(time)
         >= recommendedTimeBetweenWellnessVisits(person, time)) {
-      Code code = getWellnessVisitCode(person, time);
-      encounter = createEncounter(person, time, EncounterType.WELLNESS,
-          ClinicianSpecialty.GENERAL_PRACTICE, code);
-      encounter.name = "Encounter Module Scheduled Wellness";
-      person.attributes.put(ACTIVE_WELLNESS_ENCOUNTER, true);
-      startedEncounter = true;
+
+      if (ENABLE_WELLNESS || !person.chronicMedications.isEmpty()) {
+        Code code = getWellnessVisitCode(person, time);
+        encounter = createEncounter(person, time, EncounterType.WELLNESS,
+            ClinicianSpecialty.GENERAL_PRACTICE, code);
+        encounter.name = "Encounter Module Scheduled Wellness";
+        person.attributes.put(ACTIVE_WELLNESS_ENCOUNTER, true);
+        startedEncounter = true;
+      }
+
     } else if (person.symptomTotal() > EMERGENCY_SYMPTOM_THRESHOLD) {
       if (!person.attributes.containsKey(LAST_VISIT_SYMPTOM_TOTAL)) {
         person.attributes.put(LAST_VISIT_SYMPTOM_TOTAL, 0);

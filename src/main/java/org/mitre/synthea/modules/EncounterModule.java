@@ -7,6 +7,7 @@ import java.util.Map;
 import org.mitre.synthea.engine.Module;
 import org.mitre.synthea.helpers.Attributes;
 import org.mitre.synthea.helpers.Attributes.Inventory;
+import org.mitre.synthea.helpers.Config;
 import org.mitre.synthea.helpers.Utilities;
 import org.mitre.synthea.world.agents.Person;
 import org.mitre.synthea.world.agents.Provider;
@@ -20,6 +21,9 @@ public final class EncounterModule extends Module {
   public static final String ACTIVE_WELLNESS_ENCOUNTER = "active_wellness_encounter";
   public static final String ACTIVE_URGENT_CARE_ENCOUNTER = "active_urgent_care_encounter";
   public static final String ACTIVE_EMERGENCY_ENCOUNTER = "active_emergency_encounter";
+
+  private static final boolean ENABLE_WELLNESS =
+    Boolean.parseBoolean(Config.get("generator.wellnessencounter.enabled"));
   /**
    * These are thresholds for patients to seek symptom-driven care - they'll go to
    * the appropriate provider based on which threshold they meet.
@@ -68,12 +72,16 @@ public final class EncounterModule extends Module {
     // add a wellness encounter if this is the right time
     if (person.record.timeSinceLastWellnessEncounter(time)
         >= recommendedTimeBetweenWellnessVisits(person, time)) {
-      Code code = getWellnessVisitCode(person, time);
-      encounter = createEncounter(person, time, EncounterType.WELLNESS,
-          ClinicianSpecialty.GENERAL_PRACTICE, code);
-      encounter.name = "Encounter Module Scheduled Wellness";
-      person.attributes.put(ACTIVE_WELLNESS_ENCOUNTER, true);
-      startedEncounter = true;
+
+      if (ENABLE_WELLNESS || !person.chronicMedications.isEmpty()) {
+        Code code = getWellnessVisitCode(person, time);
+        encounter = createEncounter(person, time, EncounterType.WELLNESS,
+            ClinicianSpecialty.GENERAL_PRACTICE, code);
+        encounter.name = "Encounter Module Scheduled Wellness";
+        person.attributes.put(ACTIVE_WELLNESS_ENCOUNTER, true);
+        startedEncounter = true;
+      }
+
     } else if (person.symptomTotal() > EMERGENCY_SYMPTOM_THRESHOLD) {
       if (!person.attributes.containsKey(LAST_VISIT_SYMPTOM_TOTAL)) {
         person.attributes.put(LAST_VISIT_SYMPTOM_TOTAL, 0);
@@ -168,7 +176,7 @@ public final class EncounterModule extends Module {
   }
 
   /**
-   * Recommended time between Wellness Visits by age of patient and whether 
+   * Recommended time between Wellness Visits by age of patient and whether
    * they have chronic medications.
    * @param person The patient.
    * @param time The time of the encounter which we translate to age of patient.
@@ -235,11 +243,11 @@ public final class EncounterModule extends Module {
 
   /**
    * Get all of the Codes this module uses, for inventory purposes.
-   * 
+   *
    * @return Collection of all codes and concepts this module uses
    */
   public static Collection<Code> getAllCodes() {
-    return Arrays.asList(ENCOUNTER_CHECKUP, ENCOUNTER_EMERGENCY, 
+    return Arrays.asList(ENCOUNTER_CHECKUP, ENCOUNTER_EMERGENCY,
         WELL_CHILD_VISIT, GENERAL_EXAM, ENCOUNTER_URGENTCARE);
   }
 

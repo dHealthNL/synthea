@@ -22,6 +22,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.mitre.synthea.helpers.Config;
 import org.mitre.synthea.modules.CardiovascularDiseaseModule;
 import org.mitre.synthea.modules.DeathModule;
 import org.mitre.synthea.modules.EncounterModule;
@@ -37,23 +38,27 @@ import org.mitre.synthea.world.concepts.HealthRecord.Code;
 public class Concepts {
   /**
    * Generate an output file containing all clinical concepts used in Synthea.
-   * 
+   *
    * @param args unused
    * @throws Exception if any error occurs in reading the module files
    */
+
+  private static final boolean ENABLE_CARDIOVASCULARMODULE =
+    Boolean.parseBoolean(Config.get("modules.cardiovasculardisease.enabled"));
+
   public static void main(String[] args) throws Exception {
     System.out.println("Performing an inventory of concepts into `output/concepts.csv`...");
-    
+
     List<String> output = getConceptInventory();
-    
+
     Path outFilePath = new File("./output/concepts.csv").toPath();
-    
+
     Files.write(outFilePath, output, StandardOpenOption.CREATE);
-    
+
     System.out.println("Catalogued " + output.size() + " concepts.");
     System.out.println("Done.");
   }
-  
+
   /**
    * Get the list of all concepts in Synthea, as a list of CSV strings.
    * @return list of CSV strings
@@ -71,17 +76,19 @@ public class Concepts {
       }
     });
 
-    inventoryCodes(concepts, CardiovascularDiseaseModule.getAllCodes(),
+    if (Concepts.ENABLE_CARDIOVASCULARMODULE) {
+      inventoryCodes(concepts, CardiovascularDiseaseModule.getAllCodes(),
         CardiovascularDiseaseModule.class.getSimpleName());
+    }
     inventoryCodes(concepts, DeathModule.getAllCodes(), DeathModule.class.getSimpleName());
     inventoryCodes(concepts, EncounterModule.getAllCodes(), EncounterModule.class.getSimpleName());
     // HealthInsuranceModule has no codes
     inventoryCodes(concepts, Immunizations.getAllCodes(), Immunizations.class.getSimpleName());
     inventoryCodes(concepts, LifecycleModule.getAllCodes(), LifecycleModule.class.getSimpleName());
     // QualityOfLifeModule adds no new codes to patients
-    
+
     List<String> conceptList = new ArrayList<>();
-    
+
     for (Code code : concepts.keySet()) {
       Set<String> modules = concepts.get(code);
       String display = code.display;
@@ -90,13 +97,13 @@ public class Concepts {
       String concept = code.system + ',' + code.code + ',' + display + ',' + mods;
       conceptList.add(concept);
     }
-    
+
     return conceptList;
   }
-  
+
   /**
    * Catalog all concepts from the given module into the given Table.
-   * 
+   *
    * @param concepts Table of concepts to add to
    * @param module Module to parse for concepts and codes
    */
@@ -107,10 +114,10 @@ public class Concepts {
       inventoryState(concepts, state, module.get("name").getAsString());
     }
   }
-  
+
   /**
    * Catalog all concepts from the given state into the given Table.
-   * 
+   *
    * @param concepts Table of concepts to add to
    * @param state State to parse for concepts and codes
    */
@@ -151,7 +158,7 @@ public class Concepts {
       inventoryCodes(concepts, Collections.singleton(code), module);
     }
   }
-  
+
   /**
    * Add the Codes in the given Collection to the given inventory of concepts.
    * @param concepts Table of concepts to add to

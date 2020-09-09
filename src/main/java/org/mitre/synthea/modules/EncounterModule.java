@@ -7,6 +7,7 @@ import java.util.Map;
 import org.mitre.synthea.engine.Module;
 import org.mitre.synthea.helpers.Attributes;
 import org.mitre.synthea.helpers.Attributes.Inventory;
+import org.mitre.synthea.helpers.Config;
 import org.mitre.synthea.helpers.Utilities;
 import org.mitre.synthea.world.agents.Person;
 import org.mitre.synthea.world.agents.Provider;
@@ -44,6 +45,9 @@ public final class EncounterModule extends Module {
   public static final Code ENCOUNTER_URGENTCARE = new Code("SNOMED-CT", "702927004",
       "Urgent care clinic (procedure)");
   // NOTE: if new codes are added, be sure to update getAllCodes below
+
+  private static final boolean ENABLE_CARDIOVASCULARMODULE =
+    Boolean.parseBoolean(Config.get("modules.cardiovasculardisease.enabled"));
 
   public EncounterModule() {
     this.name = "Encounter";
@@ -117,7 +121,9 @@ public final class EncounterModule extends Module {
 
     if (startedEncounter) {
       person.setCurrentEncounter(this, encounter);
-      CardiovascularDiseaseModule.performEncounter(person, time, encounter);
+      if (EncounterModule.ENABLE_CARDIOVASCULARMODULE) {
+        CardiovascularDiseaseModule.performEncounter(person, time, encounter);
+      }
       Immunizations.performEncounter(person, time);
     }
 
@@ -168,7 +174,7 @@ public final class EncounterModule extends Module {
   }
 
   /**
-   * Recommended time between Wellness Visits by age of patient and whether 
+   * Recommended time between Wellness Visits by age of patient and whether
    * they have chronic medications.
    * @param person The patient.
    * @param time The time of the encounter which we translate to age of patient.
@@ -235,11 +241,11 @@ public final class EncounterModule extends Module {
 
   /**
    * Get all of the Codes this module uses, for inventory purposes.
-   * 
+   *
    * @return Collection of all codes and concepts this module uses
    */
   public static Collection<Code> getAllCodes() {
-    return Arrays.asList(ENCOUNTER_CHECKUP, ENCOUNTER_EMERGENCY, 
+    return Arrays.asList(ENCOUNTER_CHECKUP, ENCOUNTER_EMERGENCY,
         WELL_CHILD_VISIT, GENERAL_EXAM, ENCOUNTER_URGENTCARE);
   }
 

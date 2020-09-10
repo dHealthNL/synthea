@@ -184,7 +184,7 @@ public class FhirR4 {
       Boolean.parseBoolean(Config.get("exporter.claims"));
 
   /**
-   * This variable will enable or disable the output of the patient race information
+   * This variable will enable or disable the output of the patient race information.
    */
   private static final boolean EXPORT_RACE =
       Boolean.parseBoolean(Config.get("exporter.race"));

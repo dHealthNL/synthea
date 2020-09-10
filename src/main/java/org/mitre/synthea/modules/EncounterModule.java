@@ -22,8 +22,11 @@ public final class EncounterModule extends Module {
   public static final String ACTIVE_URGENT_CARE_ENCOUNTER = "active_urgent_care_encounter";
   public static final String ACTIVE_EMERGENCY_ENCOUNTER = "active_emergency_encounter";
 
+  /**
+  * This variable will enable or disable the general wellness checks.
+  */
   private static final boolean ENABLE_WELLNESS =
-    Boolean.parseBoolean(Config.get("generator.wellnessencounter.enabled"));
+      Boolean.parseBoolean(Config.get("generator.wellnessencounter.enabled"));
   /**
    * These are thresholds for patients to seek symptom-driven care - they'll go to
    * the appropriate provider based on which threshold they meet.

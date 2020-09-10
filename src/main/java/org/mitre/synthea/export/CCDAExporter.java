@@ -22,13 +22,13 @@ public class CCDAExporter {
   private static final Configuration TEMPLATES = templateConfiguration();
 
   /**
-   * This variable will enable or disable the output of the patient race information
+   * This variable will enable or disable the output of the patient race information.
    */
   private static final boolean EXPORT_RACE =
       Boolean.parseBoolean(Config.get("exporter.race"));
 
   /**
-   * This variable will enable or disable the output of the patient ethnicity information
+   * This variable will enable or disable the output of the patient ethnicity information.
    */
   private static final boolean EXPORT_ETHNICITY =
       Boolean.parseBoolean(Config.get("exporter.ethnicity"));
@@ -119,7 +119,10 @@ public class CCDAExporter {
     StringWriter writer = new StringWriter();
     try {
       Template template = TEMPLATES.getTemplate("ccda.ftl");
-      // TODO: Clear the template elements raceCode and ethnicGroupCode if they are disabled. Need more time to figure out the Freemaker Template engine
+      /**
+       * TODO: Clear the template elements raceCode and ethnicGroupCode if they are disabled.
+       * Need more time to figure out the Freemaker Template engine
+       */
       template.process(person.attributes, writer);
     } catch (Exception e) {
       e.printStackTrace();

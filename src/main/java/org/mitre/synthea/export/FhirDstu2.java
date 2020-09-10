@@ -150,13 +150,13 @@ public class FhirDstu2 {
   private static final String COUNTRY_CODE = Config.get("generate.geography.country_code");
 
   /**
-   * This variable will enable or disable the output of the patient race information
+   * This variable will enable or disable the output of the patient race information.
    */
   private static final boolean EXPORT_RACE =
       Boolean.parseBoolean(Config.get("exporter.race"));
 
   /**
-   * This variable will enable or disable the output of the patient ethnicity information
+   * This variable will enable or disable the output of the patient ethnicity information.
    */
   private static final boolean EXPORT_ETHNICITY =
       Boolean.parseBoolean(Config.get("exporter.ethnicity"));
@@ -346,14 +346,12 @@ public class FhirDstu2 {
           break;
       }
 
-      Code raceCode = new Code(
-        "http://hl7.org/fhir/v3/Race",
-        (String) raceEthnicityCodes.get(race),
-        raceDisplay);
+      Code raceCode = new Code("http://hl7.org/fhir/v3/Race",
+          (String) raceEthnicityCodes.get(race),
+          raceDisplay);
 
-        raceExtension.setValue(mapCodeToCodeableConcept(raceCode, "http://hl7.org/fhir/v3/Race"));
-        patientResource.addUndeclaredExtension(raceExtension);
-
+      raceExtension.setValue(mapCodeToCodeableConcept(raceCode, "http://hl7.org/fhir/v3/Race"));
+      patientResource.addUndeclaredExtension(raceExtension);
     }
 
     if (EXPORT_ETHNICITY) {

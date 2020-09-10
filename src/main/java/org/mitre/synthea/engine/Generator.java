@@ -210,7 +210,7 @@ public class Generator implements RandomNumberGenerator {
       System.out.println("Setting end date based on configuration to: " + date);
       this.stop = date.getTime();
     } catch (ParseException e) {
-      // Ignore the parsing error, this means that the date is not valid and we use the default stop date
+      // The entered end date is not a valid date or None. Use default stop date of now.
     }
     this.referenceTime = options.referenceTime;
 

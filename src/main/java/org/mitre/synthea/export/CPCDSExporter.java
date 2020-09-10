@@ -47,7 +47,7 @@ public class CPCDSExporter {
   private static final String[] PLAN_IDS = { "00000001", "00000002", "00000003" };
 
   /**
-   * This variable will enable or disable the output of claims data for the patient
+   * This variable will enable or disable the output of claims data for the patient.
    */
   protected static boolean EXPORT_CLAIMS =
       Boolean.parseBoolean(Config.get("exporter.claims"));
@@ -164,32 +164,33 @@ public class CPCDSExporter {
           + "Claim source inpatient admission code,Claim inpatient admission type code,"
           + "Claim bill facility type code,Claim service classification type code,"
           + "Claim frequency code,Claim processing status code,Claim type,"
-          + "Patient discharge status code,Claim payment denial code,Claim primary payer identifier,"
-          + "Claim payee type code,Claim payee,Claim payment status code,Claim payer identifier,"
+          + "Patient discharge status code,Claim payment denial code,"
+          + "Claim primary payer identifier,Claim payee type code,Claim payee,"
+          + "Claim payment status code,Claim payer identifier,"
           + "Days supply,RX service reference number,DAW product selection code,Refill number,"
           + "Prescription origin code,Plan reported brand generic code,Pharmacy service type code,"
-          + "Patient residence code,Claim billing provider NPI,Claim billing provider network status,"
-          + "Claim attending provider NPI,Claim attending provider network status,"
-          + "Claim site of service NPI,Claim site of service network status,"
-          + "Claim referring provider NPI,Claim referring provider network status,"
-          + "Claim performing provider NPI,Claim performing provider network status,"
-          + "Claim prescribing provider NPI,Claim prescribing provider network status,Claim PCP NPI,"
-          + "Claim total submitted amount,Claim total allowed amount,Amount paid by patient,"
-          + "Claim amount paid to provider,Member reimbursement,Claim payment amount,"
-          + "Claim disallowed amount,Member paid deductible,Co-insurance liability amount,"
-          + "Copay amount,Member liability,Claim primary payer paid amount,Claim discount amount,"
-          + "Service (from) date,Line number,Service to date,Type of service,Place of service code,"
-          + "Revenue center code,Allowed number of units,Number of units,National drug code,"
-          + "Compound code,"
+          + "Patient residence code,Claim billing provider NPI,"
+          + "Claim billing provider network status,Claim attending provider NPI,"
+          + "Claim attending provider network status,Claim site of service NPI,"
+          + "Claim site of service network status,Claim referring provider NPI,"
+          + "Claim referring provider network status,Claim performing provider NPI,"
+          + "Claim performing provider network status,Claim prescribing provider NPI,"
+          + "Claim prescribing provider network status,Claim PCP NPI,Claim total submitted amount,"
+          + "Claim total allowed amount,Amount paid by patient,Claim amount paid to provider,"
+          + "Member reimbursement,Claim payment amount,Claim disallowed amount,"
+          + "Member paid deductible,Co-insurance liability amount,Copay amount,Member liability,"
+          + "Claim primary payer paid amount,Claim discount amount,Service (from) date,Line number,"
+          + "Service to date,Type of service,Place of service code,Revenue center code,"
+          + "Allowed number of units,Number of units,National drug code,Compound code,"
           + "Quantity dispensed,Quantity qualifier code,Line benefit payment status,"
           + "Line payment denial code,Line disallowed amount,Line member reimbursement,"
-          + "Line amount paid by patient,Drug cost,Line payment amount,Line amount paid to provider,"
-          + "Line patient deductible,Line primary payer paid amount,Line coinsurance amount,"
-          + "Line submitted amount,Line allowed amount,Line member liability,Line copay amount,"
-          + "Line discount amount,Diagnosis code,Diagnosis description,Present on admission,"
-          + "Diagnosis code type,Diagnosis type,Is E code,Procedure code,Procedure description,"
-          + "Procedure date,Procedure code type,Procedure type,Modifier Code-1,Modifier Code-2,"
-          + "Modifier Code-3,Modifier Code-4";
+          + "Line amount paid by patient,Drug cost,Line payment amount,"
+          + "Line amount paid to provider,Line patient deductible,Line primary payer paid amount,"
+          + "Line coinsurance amount,Line submitted amount,Line allowed amount,"
+          + "Line member liability,Line copay amount,Line discount amount,Diagnosis code,"
+          + "Diagnosis description,Present on admission,Diagnosis code type,Diagnosis type,"
+          + "Is E code,Procedure code,Procedure description,Procedure date,Procedure code type,"
+          + "Procedure type,Modifier Code-1,Modifier Code-2,Modifier Code-3,Modifier Code-4";
 
       claims.write(cpcdsClaimColumnHeaders);
       claims.write(NEWLINE);
@@ -271,8 +272,8 @@ public class CPCDSExporter {
       String coverageID = coverage(person, personID, start, end, payerId, type, groupId, groupName,
               planName, planId);
       if (EXPORT_CLAIMS) {
-        claim(person, encounter, personID, encounterID, medRecordNumber, encounterAttributes, payerId,
-          coverageID);
+        claim(person, encounter, personID, encounterID, medRecordNumber, encounterAttributes,
+            payerId, coverageID);
       }
       hospital(encounter, encounterAttributes, payerName);
     }

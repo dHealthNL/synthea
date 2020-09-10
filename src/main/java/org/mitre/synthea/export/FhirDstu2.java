@@ -141,6 +141,9 @@ public class FhirDstu2 {
   protected static boolean TRANSACTION_BUNDLE =
       Boolean.parseBoolean(Config.get("exporter.fhir.transaction_bundle"));
 
+  /**
+   * This variable will enable or disable the output of claims data for the patient
+   */
   protected static boolean EXPORT_CLAIMS =
       Boolean.parseBoolean(Config.get("exporter.claims"));
 

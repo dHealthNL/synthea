@@ -176,6 +176,9 @@ public class FhirR4 {
       Boolean.parseBoolean(Config.get("exporter.fhir.transaction_bundle"));
   protected static boolean USE_US_CORE_IG =
       Boolean.parseBoolean(Config.get("exporter.fhir.use_us_core_ig"));
+  /**
+   * This variable will enable or disable the output of claims data for the patient
+   */
   protected static boolean EXPORT_CLAIMS =
       Boolean.parseBoolean(Config.get("exporter.claims"));
 

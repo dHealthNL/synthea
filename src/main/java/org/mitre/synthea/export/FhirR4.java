@@ -177,6 +177,18 @@ public class FhirR4 {
   protected static boolean USE_US_CORE_IG =
       Boolean.parseBoolean(Config.get("exporter.fhir.use_us_core_ig"));
 
+  /**
+   * This variable will enable or disable the output of the patient race information
+   */
+  private static final boolean EXPORT_RACE =
+      Boolean.parseBoolean(Config.get("exporter.race"));
+
+  /**
+   * This variable will enable or disable the output of the patient ethnicity information
+   */
+  private static final boolean EXPORT_ETHNICITY =
+      Boolean.parseBoolean(Config.get("exporter.ethnicity"));
+
   private static final String COUNTRY_CODE = Config.get("generate.geography.country_code");
 
   private static final Table<String, String, String> SHR_MAPPING =
@@ -281,7 +293,7 @@ public class FhirR4 {
       for (HealthRecord.Device device : encounter.devices) {
         device(person, personEntry, bundle, device);
       }
-      
+
       for (HealthRecord.Supply supply : encounter.supplies) {
         supplyDelivery(person, personEntry, bundle, supply, encounter);
       }
@@ -299,7 +311,7 @@ public class FhirR4 {
       }
 
       for (CarePlan careplan : encounter.careplans) {
-        BundleEntryComponent careTeamEntry = 
+        BundleEntryComponent careTeamEntry =
                 careTeam(person, personEntry, bundle, encounterEntry, careplan);
         carePlan(person, personEntry, bundle, encounterEntry, encounter.provider, careTeamEntry,
                 careplan);
@@ -308,7 +320,7 @@ public class FhirR4 {
       for (ImagingStudy imagingStudy : encounter.imagingStudies) {
         imagingStudy(person, personEntry, bundle, encounterEntry, imagingStudy);
       }
-      
+
       if (USE_US_CORE_IG) {
         String clinicalNoteText = ClinicalNoteExporter.export(person, encounter);
         boolean lastNote =
@@ -398,80 +410,84 @@ public class FhirR4 {
           .setValue((String) person.attributes.get(Person.IDENTIFIER_PASSPORT));
     }
 
-    if (USE_US_CORE_IG) {
-      // We do not yet account for mixed race
-      Extension raceExtension = new Extension(
-          "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race");
-      String race = (String) person.attributes.get(Person.RACE);
+    if (USE_US_CORE_IG && (EXPORT_RACE || EXPORT_ETHNICITY)) {
+      if (EXPORT_RACE) {
+        // We do not yet account for mixed race
+        Extension raceExtension = new Extension(
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race");
+        String race = (String) person.attributes.get(Person.RACE);
 
-      String raceDisplay;
-      switch (race) {
-        case "white":
-          raceDisplay = "White";
-          break;
-        case "black":
-          raceDisplay = "Black or African American";
-          break;
-        case "asian":
-          raceDisplay = "Asian";
-          break;
-        case "native":
-          raceDisplay = "American Indian or Alaska Native";
-          break;
-        default: // Other (Put Hawaiian and Pacific Islander here for now)
-          raceDisplay = "Other";
-          break;
+        String raceDisplay;
+        switch (race) {
+          case "white":
+            raceDisplay = "White";
+            break;
+          case "black":
+            raceDisplay = "Black or African American";
+            break;
+          case "asian":
+            raceDisplay = "Asian";
+            break;
+          case "native":
+            raceDisplay = "American Indian or Alaska Native";
+            break;
+          default: // Other (Put Hawaiian and Pacific Islander here for now)
+            raceDisplay = "Other";
+            break;
+        }
+
+        String raceNum = (String) raceEthnicityCodes.get(race);
+
+        Extension raceCodingExtension = new Extension("ombCategory");
+        Coding raceCoding = new Coding();
+        if (raceDisplay.equals("Other")) {
+          raceCoding.setSystem("http://terminology.hl7.org/CodeSystem/v3-NullFlavor");
+          raceCoding.setCode("UNK");
+          raceCoding.setDisplay("Unknown");
+        } else {
+          raceCoding.setSystem("urn:oid:2.16.840.1.113883.6.238");
+          raceCoding.setCode(raceNum);
+          raceCoding.setDisplay(raceDisplay);
+        }
+        raceCodingExtension.setValue(raceCoding);
+        raceExtension.addExtension(raceCodingExtension);
+
+        Extension raceTextExtension = new Extension("text");
+        raceTextExtension.setValue(new StringType(raceDisplay));
+        raceExtension.addExtension(raceTextExtension);
+        patientResource.addExtension(raceExtension);
       }
 
-      String raceNum = (String) raceEthnicityCodes.get(race);
+      if (EXPORT_ETHNICITY) {
+        // We do not yet account for mixed ethnicity
+        Extension ethnicityExtension = new Extension(
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity");
+        String ethnicity = (String) person.attributes.get(Person.ETHNICITY);
 
-      Extension raceCodingExtension = new Extension("ombCategory");
-      Coding raceCoding = new Coding();
-      if (raceDisplay.equals("Other")) {
-        raceCoding.setSystem("http://terminology.hl7.org/CodeSystem/v3-NullFlavor");
-        raceCoding.setCode("UNK");
-        raceCoding.setDisplay("Unknown");
-      } else {
-        raceCoding.setSystem("urn:oid:2.16.840.1.113883.6.238");
-        raceCoding.setCode(raceNum);
-        raceCoding.setDisplay(raceDisplay);
+        String ethnicityDisplay;
+        if (ethnicity.equals("hispanic")) {
+          ethnicity = "hispanic";
+          ethnicityDisplay = "Hispanic or Latino";
+        } else {
+          ethnicity = "nonhispanic";
+          ethnicityDisplay = "Not Hispanic or Latino";
+        }
+
+        String ethnicityNum = (String) raceEthnicityCodes.get(ethnicity);
+
+        Extension ethnicityCodingExtension = new Extension("ombCategory");
+        Coding ethnicityCoding = new Coding();
+        ethnicityCoding.setSystem("urn:oid:2.16.840.1.113883.6.238");
+        ethnicityCoding.setCode(ethnicityNum);
+        ethnicityCoding.setDisplay(ethnicityDisplay);
+        ethnicityCodingExtension.setValue(ethnicityCoding);
+
+        ethnicityExtension.addExtension(ethnicityCodingExtension);
+        Extension ethnicityTextExtension = new Extension("text");
+        ethnicityTextExtension.setValue(new StringType(ethnicityDisplay));
+        ethnicityExtension.addExtension(ethnicityTextExtension);
+        patientResource.addExtension(ethnicityExtension);
       }
-      raceCodingExtension.setValue(raceCoding);
-      raceExtension.addExtension(raceCodingExtension);
-
-      Extension raceTextExtension = new Extension("text");
-      raceTextExtension.setValue(new StringType(raceDisplay));
-      raceExtension.addExtension(raceTextExtension);
-      patientResource.addExtension(raceExtension);
-
-      // We do not yet account for mixed ethnicity
-      Extension ethnicityExtension = new Extension(
-          "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity");
-      String ethnicity = (String) person.attributes.get(Person.ETHNICITY);
-
-      String ethnicityDisplay;
-      if (ethnicity.equals("hispanic")) {
-        ethnicity = "hispanic";
-        ethnicityDisplay = "Hispanic or Latino";
-      } else {
-        ethnicity = "nonhispanic";
-        ethnicityDisplay = "Not Hispanic or Latino";
-      }
-
-      String ethnicityNum = (String) raceEthnicityCodes.get(ethnicity);
-
-      Extension ethnicityCodingExtension = new Extension("ombCategory");
-      Coding ethnicityCoding = new Coding();
-      ethnicityCoding.setSystem("urn:oid:2.16.840.1.113883.6.238");
-      ethnicityCoding.setCode(ethnicityNum);
-      ethnicityCoding.setDisplay(ethnicityDisplay);
-      ethnicityCodingExtension.setValue(ethnicityCoding);
-
-      ethnicityExtension.addExtension(ethnicityCodingExtension);
-      Extension ethnicityTextExtension = new Extension("text");
-      ethnicityTextExtension.setValue(new StringType(ethnicityDisplay));
-      ethnicityExtension.addExtension(ethnicityTextExtension);
-      patientResource.addExtension(ethnicityExtension);
     }
 
     String firstLanguage = (String) person.attributes.get(Person.FIRST_LANGUAGE);
@@ -846,7 +862,7 @@ public class FhirR4 {
       Person person, BundleEntryComponent personEntry,
       Bundle bundle, BundleEntryComponent encounterEntry, Claim claim,
       BundleEntryComponent medicationEntry) {
-    
+
     org.hl7.fhir.r4.model.Claim claimResource = new org.hl7.fhir.r4.model.Claim();
     org.hl7.fhir.r4.model.Encounter encounterResource =
         (org.hl7.fhir.r4.model.Encounter) encounterEntry.getResource();
@@ -1002,7 +1018,7 @@ public class FhirR4 {
         claimResource.addDiagnosis(diagnosisComponent);
 
         // update claimItems with diagnosis
-        ItemComponent diagnosisItem = 
+        ItemComponent diagnosisItem =
             new ItemComponent(new PositiveIntType(itemSequence),
                 mapCodeToCodeableConcept(item.codes.get(0), SNOMED_URI));
         diagnosisItem.addDiagnosisSequence(conditionSequence);
@@ -1347,7 +1363,7 @@ public class FhirR4 {
    * @param condition      The Condition
    * @return The added Entry
    */
-  private static BundleEntryComponent condition(RandomNumberGenerator rand, 
+  private static BundleEntryComponent condition(RandomNumberGenerator rand,
           BundleEntryComponent personEntry, Bundle bundle, BundleEntryComponent encounterEntry,
           HealthRecord.Entry condition) {
     Condition conditionResource = new Condition();
@@ -1568,27 +1584,27 @@ public class FhirR4 {
           + value.getClass().toString() + "; " + value);
     }
   }
-  
+
   /**
    * Maps a Synthea internal SampledData object to the FHIR standard SampledData
    * representation.
-   * 
+   *
    * @param value Synthea internal SampledData instance
    * @param unit Observation unit value
    * @return
    */
   static org.hl7.fhir.r4.model.SampledData mapValueToSampledData(
       Components.SampledData value, String unit) {
-    
+
     org.hl7.fhir.r4.model.SampledData recordData = new org.hl7.fhir.r4.model.SampledData();
     recordData.setOrigin(new Quantity().setValue(value.originValue)
         .setCode(unit).setSystem(UNITSOFMEASURE_URI)
         .setUnit(unit));
-    
+
     // Use the period from the first series. They should all be the same.
     // FHIR output is milliseconds so we need to convert from TimeSeriesData seconds.
     recordData.setPeriod(value.series.get(0).getPeriod() * 1000);
-    
+
     // Set optional fields if they were provided
     if (value.factor != null) {
       recordData.setFactor(value.factor);
@@ -1599,11 +1615,11 @@ public class FhirR4 {
     if (value.upperLimit != null) {
       recordData.setUpperLimit(value.upperLimit);
     }
-    
+
     recordData.setDimensions(value.series.size());
-    
+
     recordData.setData(ExportHelper.sampledDataToValueString(value));
-    
+
     return recordData;
   }
 
@@ -1722,7 +1738,7 @@ public class FhirR4 {
     deviceResource.setPatient(new Reference(personEntry.getFullUrl()));
     return newEntry(rand, bundle, deviceResource);
   }
-  
+
   /**
    * Map the JsonObject for a Supply into a FHIR SupplyDelivery and add it to the Bundle.
    *
@@ -1736,26 +1752,26 @@ public class FhirR4 {
   private static BundleEntryComponent supplyDelivery(RandomNumberGenerator rand,
           BundleEntryComponent personEntry, Bundle bundle, HealthRecord.Supply supply,
           Encounter encounter) {
-   
+
     SupplyDelivery supplyResource = new SupplyDelivery();
     supplyResource.setStatus(SupplyDeliveryStatus.COMPLETED);
     supplyResource.setPatient(new Reference(personEntry.getFullUrl()));
-    
+
     CodeableConcept type = new CodeableConcept();
     type.addCoding()
       .setCode("device")
       .setDisplay("Device")
       .setSystem("http://terminology.hl7.org/CodeSystem/supply-item-type");
     supplyResource.setType(type);
-    
+
     SupplyDeliverySuppliedItemComponent suppliedItem = new SupplyDeliverySuppliedItemComponent();
     suppliedItem.setItem(mapCodeToCodeableConcept(supply.codes.get(0), SNOMED_URI));
     suppliedItem.setQuantity(new Quantity(supply.quantity));
-    
+
     supplyResource.setSuppliedItem(suppliedItem);
-    
+
     supplyResource.setOccurrence(convertFhirDateTime(supply.start, true));
-    
+
     return newEntry(rand, bundle, supplyResource);
   }
 
@@ -1884,7 +1900,7 @@ public class FhirR4 {
       medicationResource.addExtension()
         .setUrl(SHR_EXT + "shr-base-ActionCode-extension")
         .setValue(PRESCRIPTION_OF_DRUG_CC);
-    
+
       medicationResource.setMeta(new Meta()
           .addProfile(SHR_EXT + "shr-medication-MedicationRequested"));
 
@@ -2027,7 +2043,7 @@ public class FhirR4 {
 
   /**
    * Add a MedicationAdministration if needed for the given medication.
-   * 
+   *
    * @param rand              Source of randomness to use when generating ids etc
    * @param personEntry       The Entry for the Person
    * @param bundle            Bundle to add the MedicationAdministration to
@@ -2599,7 +2615,7 @@ public class FhirR4 {
     imagingStudyResource.setNumberOfInstances(totalNumberOfInstances);
     return newEntry(rand, bundle, imagingStudyResource);
   }
-  
+
   /**
    * Map the given Observation with attachment element to a FHIR Media resource, and add it to the
    * given Bundle.
@@ -2632,7 +2648,7 @@ public class FhirR4 {
 
     Attachment content = (Attachment) obs.value;
     org.hl7.fhir.r4.model.Attachment contentResource = new org.hl7.fhir.r4.model.Attachment();
-    
+
     contentResource.setContentType(content.contentType);
     contentResource.setLanguage(content.language);
     if (content.data != null) {
@@ -2644,7 +2660,7 @@ public class FhirR4 {
     if (content.hash != null) {
       contentResource.setHashElement(new org.hl7.fhir.r4.model.Base64BinaryType(content.hash));
     }
-    
+
     mediaResource.setWidth(content.width);
     mediaResource.setHeight(content.height);
 

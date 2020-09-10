@@ -37,7 +37,19 @@ import org.mitre.synthea.world.agents.Person;
  */
 
 public class SymptomTextExporter {
-    
+
+  /**
+   * This variable will enable or disable the output of the patient race information
+   */
+  private static final boolean EXPORT_RACE =
+      Boolean.parseBoolean(Config.get("exporter.race"));
+
+  /**
+   * This variable will enable or disable the output of the patient ethnicity information
+   */
+  private static final boolean EXPORT_ETHNICITY =
+      Boolean.parseBoolean(Config.get("exporter.ethnicity"));
+
   /**
    * Replaces commas and line breaks in the source string with a single space.
    * Null is replaced with the empty string.
@@ -59,7 +71,7 @@ public class SymptomTextExporter {
    * @throws IOException if any error occurs writing to the standard export location
    */
   public static void exportAll(Person person, String fileTag, long endTime) throws IOException {
-    
+
     String personID = (String) person.attributes.get(Person.ID);
 
     // check if we've already exported this patient demographic data yet,
@@ -70,7 +82,7 @@ public class SymptomTextExporter {
       person.attributes.put("exported_symptoms_to_txt", personID);
     }
 
-    
+
     // now we finally start writing things
     List<String> textRecord = new LinkedList<>();
 
@@ -82,16 +94,16 @@ public class SymptomTextExporter {
         ).getConditionSymptoms();
     List<Long> list = new LinkedList<Long>(infos.keySet());
     Collections.sort(list);
-    
+
     int yearsOfHistory = Integer.parseInt(Config.get("exporter.years_of_history"));
-    
+
     for (Long time: list) {
       int symptomExporterMode = Integer.parseInt(Config.get("exporter.symptoms.mode"));
       boolean toBeExported = true;
-      if (symptomExporterMode == 0) {        
+      if (symptomExporterMode == 0) {
         long cutoffDate = endTime - Utilities.convertTime("years", yearsOfHistory);
         toBeExported = time >= cutoffDate;
-      }     
+      }
       if (!toBeExported) {
         continue;
       }
@@ -99,7 +111,7 @@ public class SymptomTextExporter {
       for (ConditionWithSymptoms conditionWithSymptoms: infos.get(time)) {
         String condition = conditionWithSymptoms.getConditionName();
         Map<String, List<Integer>> symptomInfo = conditionWithSymptoms.getSymptoms();
-        Long ageEnd = conditionWithSymptoms.getEndTime(); 
+        Long ageEnd = conditionWithSymptoms.getEndTime();
         String ageEndStr = "";
         if (ageEnd != null) {
           ageEndStr = String.valueOf(person.ageInYears(ageEnd));
@@ -109,7 +121,7 @@ public class SymptomTextExporter {
         s.append(ageEndStr).append(" | ");
         s.append(clean(condition)).append(" | ");
         s.append(clean(String.valueOf(symptomInfo.size())));
-        
+
         StringBuilder symptomStr = new StringBuilder();
         for (String symptom: symptomInfo.keySet()) {
           List<Integer> values = symptomInfo.get(symptom);
@@ -129,8 +141,8 @@ public class SymptomTextExporter {
         s.append(" | ").append(symptomData);
         textRecord.add(s.toString());
       }
-    } 
-    breakline(textRecord);    
+    }
+    breakline(textRecord);
 
     // finally write to the file
     File outDirectory = Exporter.getOutputFolder("symptoms/text", person);
@@ -162,17 +174,21 @@ public class SymptomTextExporter {
     } else {
       displayEthnicity = "Non-Hispanic";
     }
-    textRecord.add("Race:                " + WordUtils.capitalize(race));
-    textRecord.add("Ethnicity:           " + displayEthnicity);
+    if (EXPORT_RACE) {
+      textRecord.add("Race:                " + WordUtils.capitalize(race));
+    }
+    if (EXPORT_ETHNICITY) {
+      textRecord.add("Ethnicity:           " + displayEthnicity);
+    }
 
     textRecord.add("Gender:              " + person.attributes.get(Person.GENDER));
 
     String birthdate = dateFromTimestamp((long) person.attributes.get(Person.BIRTHDATE));
     textRecord.add("Birth Date:          " + birthdate);
-    
+
   }
-  
-  
+
+
 
   /**
    * Section separator (80 dashes).

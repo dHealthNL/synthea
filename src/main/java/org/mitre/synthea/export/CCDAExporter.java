@@ -6,6 +6,8 @@ import freemarker.template.TemplateException;
 
 import java.io.Serializable;
 import java.io.StringWriter;
+
+import org.mitre.synthea.helpers.Config;
 import org.mitre.synthea.helpers.RandomNumberGenerator;
 
 import org.mitre.synthea.world.agents.Person;
@@ -18,23 +20,35 @@ import org.mitre.synthea.world.concepts.RaceAndEthnicity;
 public class CCDAExporter {
 
   private static final Configuration TEMPLATES = templateConfiguration();
-  
+
+  /**
+   * This variable will enable or disable the output of the patient race information
+   */
+  private static final boolean EXPORT_RACE =
+      Boolean.parseBoolean(Config.get("exporter.race"));
+
+  /**
+   * This variable will enable or disable the output of the patient ethnicity information
+   */
+  private static final boolean EXPORT_ETHNICITY =
+      Boolean.parseBoolean(Config.get("exporter.ethnicity"));
+
   /**
    * This is a dummy class and object for FreeMarker templates that create IDs.
    */
   private static class UUIDGenerator implements Serializable {
     private RandomNumberGenerator rand;
-    
+
     public UUIDGenerator(RandomNumberGenerator rand) {
       this.rand = rand;
     }
-    
+
     @Override
     public String toString() {
       return rand.randUUID().toString();
     }
   }
-  
+
   private static Configuration templateConfiguration() {
     Configuration configuration = new Configuration(Configuration.VERSION_2_3_26);
     configuration.setDefaultEncoding("UTF-8");
@@ -105,6 +119,7 @@ public class CCDAExporter {
     StringWriter writer = new StringWriter();
     try {
       Template template = TEMPLATES.getTemplate("ccda.ftl");
+      // TODO: Clear the template elements raceCode and ethnicGroupCode if they are disabled. Need more time to figure out the Freemaker Template engine
       template.process(person.attributes, writer);
     } catch (Exception e) {
       e.printStackTrace();

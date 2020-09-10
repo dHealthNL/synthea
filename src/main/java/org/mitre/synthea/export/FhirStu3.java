@@ -160,6 +160,18 @@ public class FhirStu3 {
 
   private static final String COUNTRY_CODE = Config.get("generate.geography.country_code");
 
+  /**
+   * This variable will enable or disable the output of the patient race information
+   */
+  private static final boolean EXPORT_RACE =
+      Boolean.parseBoolean(Config.get("exporter.race"));
+
+  /**
+   * This variable will enable or disable the output of the patient ethnicity information
+   */
+  private static final boolean EXPORT_ETHNICITY =
+      Boolean.parseBoolean(Config.get("exporter.ethnicity"));
+
   private static final Table<String,String,String> SHR_MAPPING = loadSHRMapping();
 
   @SuppressWarnings("rawtypes")
@@ -283,11 +295,11 @@ public class FhirStu3 {
       for (HealthRecord.Device device : encounter.devices) {
         device(person, personEntry, bundle, device);
       }
-      
+
       for (HealthRecord.Supply supply : encounter.supplies) {
         supplyDelivery(person, personEntry, bundle, supply, encounter);
       }
-      
+
       // one claim per encounter
       BundleEntryComponent encounterClaim = encounterClaim(person, personEntry, bundle,
           encounterEntry, encounter.claim);
@@ -304,7 +316,7 @@ public class FhirStu3 {
    *
    * @param person Person to generate the FHIR JSON for
    * @param stopTime Time the simulation ended
-   * @return String containing a JSON representation of a FHIR Bundle containing the Person's 
+   * @return String containing a JSON representation of a FHIR Bundle containing the Person's
    *     health record.
    */
   public static String convertToFHIRJson(Person person, long stopTime) {
@@ -357,84 +369,88 @@ public class FhirStu3 {
           .setValue((String) person.attributes.get(Person.IDENTIFIER_PASSPORT));
     }
 
-    // We do not yet account for mixed race
-    Extension raceExtension = new Extension(
-        "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race");
-    String race = (String) person.attributes.get(Person.RACE);
+    if (EXPORT_RACE) {
+      // We do not yet account for mixed race
+      Extension raceExtension = new Extension(
+          "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race");
+      String race = (String) person.attributes.get(Person.RACE);
 
-    String raceDisplay;
-    switch (race) {
-      case "white":
-        raceDisplay = "White";
-        break;
-      case "black":
-        raceDisplay = "Black or African American";
-        break;
-      case "asian":
-        raceDisplay = "Asian";
-        break;
-      case "native":
-        raceDisplay = "American Indian or Alaska Native";
-        break;
-      default: // Other (Put Hawaiian and Pacific Islander here for now)
-        raceDisplay = "Other";
-        break;
+      String raceDisplay;
+      switch (race) {
+        case "white":
+          raceDisplay = "White";
+          break;
+        case "black":
+          raceDisplay = "Black or African American";
+          break;
+        case "asian":
+          raceDisplay = "Asian";
+          break;
+        case "native":
+          raceDisplay = "American Indian or Alaska Native";
+          break;
+        default: // Other (Put Hawaiian and Pacific Islander here for now)
+          raceDisplay = "Other";
+          break;
+      }
+
+      String raceNum = (String) raceEthnicityCodes.get(race);
+
+      Extension raceCodingExtension = new Extension("ombCategory");
+      Coding raceCoding = new Coding();
+      if (raceDisplay.equals("Other")) {
+        raceCoding.setSystem("http://hl7.org/fhir/v3/NullFlavor");
+        raceCoding.setCode("UNK");
+        raceCoding.setDisplay("Unknown");
+      } else {
+        raceCoding.setSystem("urn:oid:2.16.840.1.113883.6.238");
+        raceCoding.setCode(raceNum);
+        raceCoding.setDisplay(raceDisplay);
+      }
+      raceCodingExtension.setValue(raceCoding);
+      raceExtension.addExtension(raceCodingExtension);
+
+      Extension raceTextExtension = new Extension("text");
+      raceTextExtension.setValue(new StringType(raceDisplay));
+
+      raceExtension.addExtension(raceTextExtension);
+
+      patientResource.addExtension(raceExtension);
     }
 
-    String raceNum = (String) raceEthnicityCodes.get(race);
+    if (EXPORT_ETHNICITY) {
+      // We do not yet account for mixed ethnicity
+      Extension ethnicityExtension = new Extension(
+          "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity");
+      String ethnicity = (String) person.attributes.get(Person.ETHNICITY);
 
-    Extension raceCodingExtension = new Extension("ombCategory");
-    Coding raceCoding = new Coding();
-    if (raceDisplay.equals("Other")) {
-      raceCoding.setSystem("http://hl7.org/fhir/v3/NullFlavor");
-      raceCoding.setCode("UNK");
-      raceCoding.setDisplay("Unknown");
-    } else {
-      raceCoding.setSystem("urn:oid:2.16.840.1.113883.6.238");
-      raceCoding.setCode(raceNum);
-      raceCoding.setDisplay(raceDisplay);
+      String ethnicityDisplay;
+      if (ethnicity.equals("hispanic")) {
+        ethnicity = "hispanic";
+        ethnicityDisplay = "Hispanic or Latino";
+      } else {
+        ethnicity = "nonhispanic";
+        ethnicityDisplay = "Not Hispanic or Latino";
+      }
+
+      String ethnicityNum = (String) raceEthnicityCodes.get(ethnicity);
+
+      Extension ethnicityCodingExtension = new Extension("ombCategory");
+      Coding ethnicityCoding = new Coding();
+      ethnicityCoding.setSystem("urn:oid:2.16.840.1.113883.6.238");
+      ethnicityCoding.setCode(ethnicityNum);
+      ethnicityCoding.setDisplay(ethnicityDisplay);
+      ethnicityCodingExtension.setValue(ethnicityCoding);
+
+      ethnicityExtension.addExtension(ethnicityCodingExtension);
+
+      Extension ethnicityTextExtension = new Extension("text");
+      ethnicityTextExtension.setValue(new StringType(ethnicityDisplay));
+
+      ethnicityExtension.addExtension(ethnicityTextExtension);
+
+      patientResource.addExtension(ethnicityExtension);
     }
-    raceCodingExtension.setValue(raceCoding);
-    raceExtension.addExtension(raceCodingExtension);
-
-    Extension raceTextExtension = new Extension("text");
-    raceTextExtension.setValue(new StringType(raceDisplay));
-
-    raceExtension.addExtension(raceTextExtension);
-
-    patientResource.addExtension(raceExtension);
-
-    // We do not yet account for mixed ethnicity
-    Extension ethnicityExtension = new Extension(
-        "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity");
-    String ethnicity = (String) person.attributes.get(Person.ETHNICITY);
-
-    String ethnicityDisplay;
-    if (ethnicity.equals("hispanic")) {
-      ethnicity = "hispanic";
-      ethnicityDisplay = "Hispanic or Latino";
-    } else {
-      ethnicity = "nonhispanic";
-      ethnicityDisplay = "Not Hispanic or Latino";
-    }
-
-    String ethnicityNum = (String) raceEthnicityCodes.get(ethnicity);
-
-    Extension ethnicityCodingExtension = new Extension("ombCategory");
-    Coding ethnicityCoding = new Coding();
-    ethnicityCoding.setSystem("urn:oid:2.16.840.1.113883.6.238");
-    ethnicityCoding.setCode(ethnicityNum);
-    ethnicityCoding.setDisplay(ethnicityDisplay);
-    ethnicityCodingExtension.setValue(ethnicityCoding);
-
-    ethnicityExtension.addExtension(ethnicityCodingExtension);
-
-    Extension ethnicityTextExtension = new Extension("text");
-    ethnicityTextExtension.setValue(new StringType(ethnicityDisplay));
-
-    ethnicityExtension.addExtension(ethnicityTextExtension);
-
-    patientResource.addExtension(ethnicityExtension);
 
     String firstLanguage = (String) person.attributes.get(Person.FIRST_LANGUAGE);
     Map languageMap = (Map) languageLookup.get(firstLanguage);
@@ -759,7 +775,7 @@ public class FhirStu3 {
    * @param medicationEntry The Entry for the Medication object, previously created
    * @return the added Entry
    */
-  private static BundleEntryComponent medicationClaim(RandomNumberGenerator rand, 
+  private static BundleEntryComponent medicationClaim(RandomNumberGenerator rand,
           BundleEntryComponent personEntry, Bundle bundle, BundleEntryComponent encounterEntry,
           Claim claim, BundleEntryComponent medicationEntry) {
     org.hl7.fhir.dstu3.model.Claim claimResource = new org.hl7.fhir.dstu3.model.Claim();
@@ -801,7 +817,7 @@ public class FhirStu3 {
    * @param claim the Claim object
    * @return the added Entry
    */
-  private static BundleEntryComponent encounterClaim(RandomNumberGenerator rand, 
+  private static BundleEntryComponent encounterClaim(RandomNumberGenerator rand,
           BundleEntryComponent personEntry, Bundle bundle, BundleEntryComponent encounterEntry,
           Claim claim) {
     org.hl7.fhir.dstu3.model.Claim claimResource = new org.hl7.fhir.dstu3.model.Claim();
@@ -1521,7 +1537,7 @@ public class FhirStu3 {
    * @param condition The Condition
    * @return The added Entry
    */
-  private static BundleEntryComponent condition(RandomNumberGenerator rand, 
+  private static BundleEntryComponent condition(RandomNumberGenerator rand,
           BundleEntryComponent personEntry, Bundle bundle, BundleEntryComponent encounterEntry,
           HealthRecord.Entry condition) {
     Condition conditionResource = new Condition();
@@ -1618,7 +1634,7 @@ public class FhirStu3 {
    * @param observation The Observation
    * @return The added Entry
    */
-  private static BundleEntryComponent observation(RandomNumberGenerator rand, 
+  private static BundleEntryComponent observation(RandomNumberGenerator rand,
           BundleEntryComponent personEntry, Bundle bundle, BundleEntryComponent encounterEntry,
           Observation observation) {
     org.hl7.fhir.dstu3.model.Observation observationResource =
@@ -1698,31 +1714,31 @@ public class FhirStu3 {
           + value.getClass().toString() + "; " + value);
     }
   }
-  
+
   /**
    * Maps a Synthea internal SampledData object to the FHIR standard SampledData
    * representation.
-   * 
+   *
    * @param value Synthea internal SampledData instance
    * @param unit Observation unit value
    * @return
    */
   static org.hl7.fhir.dstu3.model.SampledData mapValueToSampledData(
       Components.SampledData value, String unit) {
-    
+
     org.hl7.fhir.dstu3.model.SampledData recordData = new org.hl7.fhir.dstu3.model.SampledData();
-    
+
     SimpleQuantity origin = new SimpleQuantity();
     origin.setValue(new BigDecimal(value.originValue))
       .setCode(unit).setSystem(UNITSOFMEASURE_URI)
       .setUnit(unit);
-    
+
     recordData.setOrigin(origin);
-    
+
     // Use the period from the first series. They should all be the same.
     // FHIR output is milliseconds so we need to convert from TimeSeriesData seconds.
     recordData.setPeriod(value.series.get(0).getPeriod() * 1000);
-    
+
     // Set optional fields if they were provided
     if (value.factor != null) {
       recordData.setFactor(value.factor);
@@ -1733,11 +1749,11 @@ public class FhirStu3 {
     if (value.upperLimit != null) {
       recordData.setUpperLimit(value.upperLimit);
     }
-    
+
     recordData.setDimensions(value.series.size());
-    
+
     recordData.setData(ExportHelper.sampledDataToValueString(value));
-    
+
     return recordData;
   }
 
@@ -1751,7 +1767,7 @@ public class FhirStu3 {
    * @param procedure  The Procedure
    * @return The added Entry
    */
-  private static BundleEntryComponent procedure(RandomNumberGenerator rand, 
+  private static BundleEntryComponent procedure(RandomNumberGenerator rand,
           BundleEntryComponent personEntry, Bundle bundle, BundleEntryComponent encounterEntry,
           Procedure procedure) {
     org.hl7.fhir.dstu3.model.Procedure procedureResource = new org.hl7.fhir.dstu3.model.Procedure();
@@ -1807,7 +1823,7 @@ public class FhirStu3 {
     return procedureEntry;
   }
 
-  private static BundleEntryComponent immunization(RandomNumberGenerator rand, 
+  private static BundleEntryComponent immunization(RandomNumberGenerator rand,
           BundleEntryComponent personEntry, Bundle bundle, BundleEntryComponent encounterEntry,
           HealthRecord.Entry immunization) {
     Immunization immResource = new Immunization();
@@ -1849,7 +1865,7 @@ public class FhirStu3 {
    * @param medication The Medication
    * @return The added Entry
    */
-  private static BundleEntryComponent medication(RandomNumberGenerator rand, 
+  private static BundleEntryComponent medication(RandomNumberGenerator rand,
           BundleEntryComponent personEntry, Bundle bundle, BundleEntryComponent encounterEntry,
           Medication medication) {
     MedicationRequest medicationResource = new MedicationRequest();
@@ -1973,10 +1989,10 @@ public class FhirStu3 {
 
     return medicationEntry;
   }
-  
+
   /**
    * Add a MedicationAdministration if needed for the given medication.
-   * 
+   *
    * @param rand Source of randomness to use when generating ids etc
    * @param personEntry       The Entry for the Person
    * @param bundle            Bundle to add the MedicationAdministration to
@@ -2060,7 +2076,7 @@ public class FhirStu3 {
    * @param report The Report
    * @return The added Entry
    */
-  private static BundleEntryComponent report(RandomNumberGenerator rand, 
+  private static BundleEntryComponent report(RandomNumberGenerator rand,
           BundleEntryComponent personEntry, Bundle bundle,
           BundleEntryComponent encounterEntry, Report report) {
     DiagnosticReport reportResource = new DiagnosticReport();
@@ -2166,7 +2182,7 @@ public class FhirStu3 {
    * @param imagingStudy The ImagingStudy to map to FHIR and add to the bundle
    * @return The added Entry
    */
-  private static BundleEntryComponent imagingStudy(RandomNumberGenerator rand, 
+  private static BundleEntryComponent imagingStudy(RandomNumberGenerator rand,
           BundleEntryComponent personEntry, Bundle bundle, BundleEntryComponent encounterEntry,
           ImagingStudy imagingStudy) {
     org.hl7.fhir.dstu3.model.ImagingStudy imagingStudyResource =
@@ -2233,7 +2249,7 @@ public class FhirStu3 {
     imagingStudyResource.setNumberOfInstances(totalNumberOfInstances);
     return newEntry(rand, bundle, imagingStudyResource);
   }
-  
+
   /**
    * Map the given Media element to a FHIR Media resource, and add it to the given Bundle.
    *
@@ -2244,7 +2260,7 @@ public class FhirStu3 {
    * @param obs   The Observation to map to FHIR and add to the bundle
    * @return The added Entry
    */
-  private static BundleEntryComponent media(RandomNumberGenerator rand, 
+  private static BundleEntryComponent media(RandomNumberGenerator rand,
           BundleEntryComponent personEntry, Bundle bundle,
           BundleEntryComponent encounterEntry, Observation obs) {
     org.hl7.fhir.dstu3.model.Media mediaResource =
@@ -2255,14 +2271,14 @@ public class FhirStu3 {
           .map(code -> mapCodeToCodeableConcept(code, SNOMED_URI)).collect(Collectors.toList());
       mediaResource.setReasonCode(reasonList);
     }
-    
+
     // Hard code as an image
     mediaResource.setType(DigitalMediaType.PHOTO);
     mediaResource.setSubject(new Reference(personEntry.getFullUrl()));
 
     Attachment content = (Attachment) obs.value;
     org.hl7.fhir.dstu3.model.Attachment contentResource = new org.hl7.fhir.dstu3.model.Attachment();
-    
+
     contentResource.setContentType(content.contentType);
     contentResource.setLanguage(content.language);
     if (content.data != null) {
@@ -2274,10 +2290,10 @@ public class FhirStu3 {
     if (content.hash != null) {
       contentResource.setHashElement(new org.hl7.fhir.dstu3.model.Base64BinaryType(content.hash));
     }
-    
+
     mediaResource.setWidth(content.width);
     mediaResource.setHeight(content.height);
-    
+
     mediaResource.setContent(contentResource);
 
     return newEntry(rand, bundle, mediaResource);
@@ -2292,7 +2308,7 @@ public class FhirStu3 {
    * @param device         The device to add.
    * @return The added Entry.
    */
-  private static BundleEntryComponent device(RandomNumberGenerator rand, 
+  private static BundleEntryComponent device(RandomNumberGenerator rand,
           BundleEntryComponent personEntry, Bundle bundle, HealthRecord.Device device) {
     Device deviceResource = new Device();
     Device.DeviceUdiComponent udi = new Device.DeviceUdiComponent()
@@ -2313,7 +2329,7 @@ public class FhirStu3 {
     deviceResource.setPatient(new Reference(personEntry.getFullUrl()));
     return newEntry(rand, bundle, deviceResource);
   }
-  
+
   /**
    * Map the JsonObject for a Supply into a FHIR SupplyDelivery and add it to the Bundle.
    *
@@ -2327,32 +2343,32 @@ public class FhirStu3 {
   private static BundleEntryComponent supplyDelivery(RandomNumberGenerator rand,
           BundleEntryComponent personEntry, Bundle bundle, HealthRecord.Supply supply,
           Encounter encounter) {
-   
+
     SupplyDelivery supplyResource = new SupplyDelivery();
     supplyResource.setStatus(SupplyDeliveryStatus.COMPLETED);
     supplyResource.setPatient(new Reference(personEntry.getFullUrl()));
-    
+
     CodeableConcept type = new CodeableConcept();
     type.addCoding()
       .setCode("device")
       .setDisplay("Device")
       .setSystem("http://hl7.org/fhir/supply-item-type");
     supplyResource.setType(type);
-    
+
     SupplyDeliverySuppliedItemComponent suppliedItem = new SupplyDeliverySuppliedItemComponent();
     suppliedItem.setItem(mapCodeToCodeableConcept(supply.codes.get(0), SNOMED_URI));
-    
+
     SimpleQuantity quantity = new SimpleQuantity();
     quantity.setValue(supply.quantity);
     suppliedItem.setQuantity(quantity);
-    
+
     supplyResource.setSuppliedItem(suppliedItem);
-    
+
     supplyResource.setOccurrence(convertFhirDateTime(supply.start, true));
-    
+
     return newEntry(rand, bundle, supplyResource);
   }
-  
+
   /**
    * Map the Provider into a FHIR Organization resource, and add it to the given Bundle.
    * @param bundle The Bundle to add to
@@ -2396,7 +2412,7 @@ public class FhirStu3 {
       geolocation.addExtension("latitude", new DecimalType(coord.getY()));
       geolocation.addExtension("longitude", new DecimalType(coord.getX()));
     }
-    
+
     if (provider.phone != null && !provider.phone.isEmpty()) {
       ContactPoint contactPoint = new ContactPoint()
           .setSystem(ContactPointSystem.PHONE)
@@ -2620,7 +2636,7 @@ public class FhirStu3 {
    * @param resource Resource the new Entry should contain
    * @return the created Entry
    */
-  private static BundleEntryComponent newEntry(RandomNumberGenerator rand, Bundle bundle, 
+  private static BundleEntryComponent newEntry(RandomNumberGenerator rand, Bundle bundle,
           Resource resource) {
     String resourceID = rand.randUUID().toString();
     return newEntry(bundle, resource, resourceID);

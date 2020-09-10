@@ -35,7 +35,7 @@ public class CPCDSExporter {
    */
   private static final String[] COVERAGE_TYPES = { "HMO", "PPO", "EPO", "POS" };
   private static final String[] GROUP_NAMES = {
-    "Freya Analytics", "Thorton Industries", "Apollo Dynamics", "Cryocast Technologies", 
+    "Freya Analytics", "Thorton Industries", "Apollo Dynamics", "Cryocast Technologies",
     "Draugr Expeditions", "Odin Group LLC", "LowKey", "Black Castle Securities",
     "NewWave Technologies", "Realms Financial" };
 
@@ -64,7 +64,7 @@ public class CPCDSExporter {
    * Writer for Hospitals.csv
    */
   private FileWriter hospitals;
-  
+
   /**
    * Writer for Practitioners.csv
    */
@@ -74,6 +74,18 @@ public class CPCDSExporter {
    * System-dependent string for a line break. (\n on Mac, *nix, \r\n on Windows)
    */
   private static final String NEWLINE = System.lineSeparator();
+
+  /**
+   * This variable will enable or disable the output of the patient race information
+   */
+  private static final boolean EXPORT_RACE =
+      Boolean.parseBoolean(Config.get("exporter.race"));
+
+  /**
+   * This variable will enable or disable the output of the patient ethnicity information
+   */
+  private static final boolean EXPORT_ETHNICITY =
+      Boolean.parseBoolean(Config.get("exporter.ethnicity"));
 
   /**
    * Trackers for Practitioner and Hospital outputs.
@@ -129,7 +141,7 @@ public class CPCDSExporter {
 
   /**
    * Write the headers to each of the CSV files.
-   * 
+   *
    * @throws IOException if any IO error occurs
    */
   private void writeCPCDSHeaders() throws IOException {
@@ -137,7 +149,9 @@ public class CPCDSExporter {
         .write("Member id,Date of birth,Date of death,Home_County,Home_State,Home_Country,"
                 + "Home_Zip code,Bill_County,Bill_State,Bill_Country,Bill_Zip code,"
                 + "Work_County,Work_State,Work_Country,Work_Zip code,"
-                + "Race code,Ethnicity,Gender code,Birth sex,Name");
+                + (EXPORT_RACE ? "Race code," : "")
+                + (EXPORT_ETHNICITY ? "Ethnicity," : "")
+                + "Gender code,Birth sex,Name");
     patients.write(NEWLINE);
 
     coverages
@@ -204,7 +218,7 @@ public class CPCDSExporter {
 
   /**
    * Get the current instance of the CSVExporter.
-   * 
+   *
    * @return the current instance of the CSVExporter.
    */
   public static CPCDSExporter getInstance() {
@@ -213,7 +227,7 @@ public class CPCDSExporter {
 
   /**
    * Add a single Person's health record info to the CSV records.
-   * 
+   *
    * @param person Person to write record data for
    * @param time   Time the simulation ended
    * @throws IOException if any IO error occurs
@@ -264,7 +278,7 @@ public class CPCDSExporter {
       hospital(encounter, encounterAttributes, payerName);
     }
 
-    
+
     patients.flush();
     coverages.flush();
     claims.flush();
@@ -314,6 +328,14 @@ public class CPCDSExporter {
     String[] attributes = { Person.RACE, Person.ETHNICITY, Person.GENDER,
       Person.GENDER, Person.NAME };
     for (String attribute : attributes) {
+      // Skip race field when race export is disabled
+      if (!EXPORT_RACE && Person.RACE == attribute) {
+        continue;
+      }
+      // Skip ethnicity field when ethnicity export is disabled
+      if (!EXPORT_ETHNICITY && Person.ETHNICITY == attribute) {
+        continue;
+      }
       String value = (String) person.attributes.getOrDefault(attribute, "");
       s.append(',').append(clean(value));
     }
@@ -334,7 +356,7 @@ public class CPCDSExporter {
    * @throws IOException if any IO error occurs
    */
   private String coverage(RandomNumberGenerator rand, String personID, long start, long stop,
-          String payerId, String type, UUID groupId, String groupName, String name, 
+          String payerId, String type, UUID groupId, String groupName, String name,
           String planId) throws IOException {
 
     StringBuilder s = new StringBuilder();
@@ -372,7 +394,7 @@ public class CPCDSExporter {
   /**
    * Method to write a single Claims file. Take an encounter in the parameters and
    * processes Diagnoses, Procedures, and Pharmacy claims for each one, in order.
-   * 
+   *
    * @param rand            Source of randomness to use when generating ids etc
    * @param encounter       The encounter object itself
    * @param personID        The Id of the involved patient
@@ -382,7 +404,7 @@ public class CPCDSExporter {
    * @param payerId         The Id of the payer
    * @throws IOException Throws this exception
    */
-  private void claim(RandomNumberGenerator rand, Encounter encounter, String personID, 
+  private void claim(RandomNumberGenerator rand, Encounter encounter, String personID,
           String encounterID, UUID medRecordNumber, CPCDSAttributes attributes, String payerId,
           String coverageID) throws IOException {
 
@@ -902,14 +924,14 @@ public class CPCDSExporter {
 
   /**
    * Write practitioner data to csv file.
-   * 
+   *
    * @param encounter the encounter
    * @param attributes the attributes
    * @throws IOException on failure
    */
   private void practitioner(String specialty, String providerNPI, String organizationNPI,
           String providerName) throws IOException {
-    
+
     StringBuilder s = new StringBuilder();
     // Practitioner NPI,Organization NPI,Specialty
 
@@ -924,7 +946,7 @@ public class CPCDSExporter {
       s.append(clean(organizationNPI)).append(',');
       s.append("provider").append(',');
       s.append(clean(specialty)).append(NEWLINE);
-      
+
       write(s.toString(), practitioners);
     }
   }
@@ -940,12 +962,12 @@ public class CPCDSExporter {
           throws IOException {
     StringBuilder s = new StringBuilder();
     // Id,Name,Address,City,State,ZIP,Phone,Type,Ownership
-    
+
     Boolean continueFlag = true;
     if (exportedHospitals.contains(attributes.getServiceSiteNPI())) {
       continueFlag = false;
     }
-    
+
     if (continueFlag && encounter.provider != null) {
       s.append(clean(attributes.getServiceSiteNPI())).append(',');
       s.append(clean(encounter.provider.name)).append(',');
@@ -955,7 +977,7 @@ public class CPCDSExporter {
       s.append(clean(encounter.provider.zip)).append(',');
       s.append(clean(encounter.provider.phone)).append(',');
       s.append(clean(encounter.provider.type)).append(NEWLINE);
-      
+
       exportedHospitals.add(attributes.getServiceSiteNPI());
 
       write(s.toString(), hospitals);
@@ -991,7 +1013,7 @@ public class CPCDSExporter {
   /**
    * Create a random long between an upper and lower bound. Utilizing longs to
    * cope with 10+ digit integers.
-   * 
+   *
    * @param lower the lower bound for the integer, inclusive
    * @param upper the upper bound for the integer, inclusive
    * @return a random long between the lower and upper bounds
@@ -1035,7 +1057,7 @@ public class CPCDSExporter {
     /**
      * Constructor. Takes the encounter and processes relevant encounters based on
      * its data.
-     * 
+     *
      * @param encounter The encounter object
      */
     public CPCDSAttributes(Encounter encounter) {
@@ -1062,7 +1084,7 @@ public class CPCDSExporter {
         overwrittenNPIs.put(doctorNPI, newPractitionerID);
         doctorNPI = newPractitionerID;
       }
-      
+
 
       if (encounter.medications.size() != 0 && encounter.procedures.size() == 0) {
         setClaimType("pharmacy");
@@ -1138,7 +1160,7 @@ public class CPCDSExporter {
     /**
      * Helper method to generate appropriate code bundles for inpatient, outpatient,
      * and emergency claims.
-     * 
+     *
      * @param type The encounter class
      */
     public void isInpatient(String type) {
@@ -1206,7 +1228,7 @@ public class CPCDSExporter {
     private void setNetworkStatus(String code) {
       this.networkStatus = code;
     }
-    
+
     public String getRevenueCenterCode() {
       return revenueCenterCode;
     }

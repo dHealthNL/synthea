@@ -133,6 +133,18 @@ public class CSVExporter {
   private static final String NEWLINE = System.lineSeparator();
 
   /**
+   * This variable will enable or disable the output of the patient race information
+   */
+  private static final boolean EXPORT_RACE =
+      Boolean.parseBoolean(Config.get("exporter.race"));
+
+  /**
+   * This variable will enable or disable the output of the patient ethnicity information
+   */
+  private static final boolean EXPORT_ETHNICITY =
+      Boolean.parseBoolean(Config.get("exporter.ethnicity"));
+
+  /**
    * Constructor for the CSVExporter - initialize the 9 specified files and store
    * the writers in fields.
    */
@@ -220,7 +232,10 @@ public class CSVExporter {
    */
   private void writeCSVHeaders() throws IOException {
     patients.write("Id,BIRTHDATE,DEATHDATE,SSN,DRIVERS,PASSPORT,"
-        + "PREFIX,FIRST,LAST,SUFFIX,MAIDEN,MARITAL,RACE,ETHNICITY,GENDER,BIRTHPLACE,"
+        + "PREFIX,FIRST,LAST,SUFFIX,MAIDEN,MARITAL,"
+        + (EXPORT_RACE ? "RACE," : "")
+        + (EXPORT_ETHNICITY ? "ETHNICITY," : "")
+        + "GENDER,BIRTHPLACE,"
         + "ADDRESS,CITY,STATE,COUNTY,ZIP,LAT,LON,HEALTHCARE_EXPENSES,HEALTHCARE_COVERAGE");
     patients.write(NEWLINE);
     allergies.write("START,STOP,PATIENT,ENCOUNTER,CODE,DESCRIPTION");
@@ -533,6 +548,16 @@ public class CSVExporter {
         "county",
         Person.ZIP
     }) {
+      if (!EXPORT_RACE && Person.RACE == attribute) {
+        // Skip race content field when race export is disabled.
+        continue;
+      }
+
+      if (!EXPORT_ETHNICITY && Person.ETHNICITY == attribute) {
+        // Skip ethnicity content field when race export is disabled.
+        continue;
+      }
+
       String value = (String) person.attributes.getOrDefault(attribute, "");
       s.append(',').append(clean(value));
     }

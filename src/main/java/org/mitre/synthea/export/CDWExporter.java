@@ -38,8 +38,8 @@ import org.mitre.synthea.world.concepts.HealthRecord.Report;
 import org.mitre.synthea.world.geography.Location;
 
 /**
- * This exporter attempts to export synthetic patient data into 
- * comma-separated value (CSV) files that align with the Veteran's 
+ * This exporter attempts to export synthetic patient data into
+ * comma-separated value (CSV) files that align with the Veteran's
  * Health Administration (VHA) Corporate Data Warehouse (CDW).
  * <p></p>
  * https://www.data.va.gov/dataset/corporate-data-warehouse-cdw
@@ -50,6 +50,18 @@ public class CDWExporter {
 
   /** Temporary attribute to record clinician on a provider encounter. */
   private static final String CLINICIAN_SID = "CLINICIAN_SID";
+
+  /**
+   * This variable will enable or disable the output of the patient race information
+   */
+  private static final boolean EXPORT_RACE =
+      Boolean.parseBoolean(Config.get("exporter.race"));
+
+  /**
+   * This variable will enable or disable the output of the patient ethnicity information
+   */
+  private static final boolean EXPORT_ETHNICITY =
+      Boolean.parseBoolean(Config.get("exporter.ethnicity"));
 
   /**
    * Table key sequence generators.
@@ -144,7 +156,7 @@ public class CDWExporter {
    * Writers for vital sign Observation data.
    */
   private OutputStreamWriter vitalSign;
-  
+
   /**
    * Charset for specifying the character set of the output files.
    */
@@ -161,7 +173,7 @@ public class CDWExporter {
    */
   private CDWExporter() {
     sids = new HashMap<OutputStreamWriter,AtomicInteger>();
-    
+
     try {
       File output = Exporter.getOutputFolder("cdw", null);
       output.mkdirs();
@@ -172,8 +184,14 @@ public class CDWExporter {
       spatient = openOutputStreamWriter(outputDirectory, "spatient.csv");
       spatientaddress = openOutputStreamWriter(outputDirectory, "spatientaddress.csv");
       spatientphone = openOutputStreamWriter(outputDirectory, "spatientphone.csv");
-      patientrace = openOutputStreamWriter(outputDirectory, "patientrace.csv");
-      patientethnicity = openOutputStreamWriter(outputDirectory, "patientethnicity.csv");
+
+      if (EXPORT_RACE) {
+        patientrace = openOutputStreamWriter(outputDirectory, "patientrace.csv");
+      }
+
+      if (EXPORT_ETHNICITY) {
+        patientethnicity = openOutputStreamWriter(outputDirectory, "patientethnicity.csv");
+      }
 
       // Encounter Data
       consult = openOutputStreamWriter(outputDirectory, "consult.csv");
@@ -276,10 +294,16 @@ public class CDWExporter {
     spatientphone.write("SPatientPhoneSID,PatientSID,PatientContactType,NameOfContact,"
         + "RelationshipToPatient,PhoneNumber,WorkPhoneNumber,EmailAddress");
     spatientphone.write(NEWLINE);
-    patientrace.write("PatientRaceSID,PatientSID,Race");
-    patientrace.write(NEWLINE);
-    patientethnicity.write("PatientEthnicitySID,PatientSID,Ethnicity");
-    patientethnicity.write(NEWLINE);
+
+    if (EXPORT_RACE) {
+      patientrace.write("PatientRaceSID,PatientSID,Race");
+      patientrace.write(NEWLINE);
+    }
+
+    if (EXPORT_ETHNICITY) {
+      patientethnicity.write("PatientEthnicitySID,PatientSID,Ethnicity");
+      patientethnicity.write(NEWLINE);
+    }
 
     // Encounter Tables
     consult.write("ConsultSID,ToRequestServiceSID");
@@ -513,8 +537,12 @@ public class CDWExporter {
     spatient.flush();
     spatientaddress.flush();
     spatientphone.flush();
-    patientrace.flush();
-    patientethnicity.flush();
+    if (EXPORT_RACE) {
+      patientrace.flush();
+    }
+    if (EXPORT_ETHNICITY) {
+      patientethnicity.flush();
+    }
 
     // Encounter Data
     consult.flush();
@@ -657,11 +685,11 @@ public class CDWExporter {
     if (person.attributes.get(Person.GENDER).equals("M")) {
       s.append(",M,Male");
     } else {
-      s.append(",F,Female");      
+      s.append(",F,Female");
     }
-    
+
     s.append(",None"); // Religion
-    
+
     // Currently there are no divorces or widows
     // Legal codes: (D)ivorced, (N)ever Married, (S)eperated, (W)idowed, (M)arried, (U)nknown
     String marital = ((String) person.attributes.get(Person.MARITAL_STATUS));
@@ -677,12 +705,12 @@ public class CDWExporter {
       s.append(",Unknown");
     }
     s.append(',').append(maritalStatus.addFact(marital, marital));
-    
+
     // TODO Need an enlistment date or date they became a veteran.
     s.append(',').append(iso8601Timestamp(time - Utilities.convertTime("years", 10)));
     s.append(NEWLINE);
     write(s.toString(), spatient);
-    
+
     //  spatientaddress.write("SPatientAddressSID,PatientSID,AddressType,NameOfContact,"
     //  + "RelationshipToPatient,StreetAddress1,StreetAddress2,StreetAddress3,"
     //  + "City,State,Zip,PostalCode,Country,GISMatchScore,GISStreetSide,"
@@ -708,7 +736,7 @@ public class CDWExporter {
     }
     s.append(NEWLINE);
     write(s.toString(), spatientaddress);
-    
+
     //spatientphone.write("SPatientPhoneSID,PatientSID,PatientContactType,NameOfContact,"
     //  + "RelationshipToPatient,PhoneNumber,WorkPhoneNumber,EmailAddress");
     s.setLength(0);
@@ -738,45 +766,52 @@ public class CDWExporter {
       write(s.toString(), spatientphone);
     }
 
-    //patientrace.write("PatientRaceSID,PatientSID,Race");
-    String race = (String) person.attributes.get(Person.RACE);
-    String ethnicity = (String) person.attributes.get(Person.ETHNICITY);
-    if (race.equals("white") && !ethnicity.equals("hispanic")) {
-      race = "WHITE NOT OF HISP ORIG";
-    } else if (race.equals("white") && ethnicity.equals("hispanic")) {
-      race = "WHITE";
-    } else if (race.equals("black")) {
-      race = "BLACK OR AFRICAN AMERICAN";
-    } else if (race.equals("asian")) {
-      race = "ASIAN";
-    } else if (race.equals("native")) {
-      if (person.attributes.get(Person.STATE).equals("Hawaii")) {
-        race = "NATIVE HAWAIIAN OR OTHER PACIFIC ISLANDER";
-      } else {
-        race = "AMERICAN INDIAN OR ALASKA NATIVE";
+    if (EXPORT_RACE || EXPORT_ETHNICITY) {
+      //patientrace.write("PatientRaceSID,PatientSID,Race");
+      String race = (String) person.attributes.get(Person.RACE);
+      String ethnicity = (String) person.attributes.get(Person.ETHNICITY);
+      if (race.equals("white") && !ethnicity.equals("hispanic")) {
+        race = "WHITE NOT OF HISP ORIG";
+      } else if (race.equals("white") && ethnicity.equals("hispanic")) {
+        race = "WHITE";
+      } else if (race.equals("black")) {
+        race = "BLACK OR AFRICAN AMERICAN";
+      } else if (race.equals("asian")) {
+        race = "ASIAN";
+      } else if (race.equals("native")) {
+        if (person.attributes.get(Person.STATE).equals("Hawaii")) {
+          race = "NATIVE HAWAIIAN OR OTHER PACIFIC ISLANDER";
+        } else {
+          race = "AMERICAN INDIAN OR ALASKA NATIVE";
+        }
+      } else { // race.equals("other")
+        race = "ASIAN";
       }
-    } else { // race.equals("other")
-      race = "ASIAN";
-    }
-    s.setLength(0);
-    s.append(getNextKey(patientrace)).append(',');
-    s.append(personID).append(',');
-    s.append(race);
-    s.append(NEWLINE);
-    write(s.toString(), patientrace);
 
-    //patientethnicity.write("PatientEthnicitySID,PatientSID,Ethnicity");
-    s.setLength(0);
-    s.append(getNextKey(patientethnicity)).append(',');
-    s.append(personID).append(',');
-    race = (String) person.attributes.get(Person.RACE);
-    if (race.equals("hispanic")) {
-      s.append("HISPANIC OR LATINO");
-    } else {
-      s.append("NOT HISPANIC OR LATINO");
+      if (EXPORT_RACE) {
+        s.setLength(0);
+        s.append(getNextKey(patientrace)).append(',');
+        s.append(personID).append(',');
+        s.append(race);
+        s.append(NEWLINE);
+        write(s.toString(), patientrace);
+      }
+
+      if (EXPORT_ETHNICITY) {
+        //patientethnicity.write("PatientEthnicitySID,PatientSID,Ethnicity");
+        s.setLength(0);
+        s.append(getNextKey(patientethnicity)).append(',');
+        s.append(personID).append(',');
+        race = (String) person.attributes.get(Person.RACE);
+        if (race.equals("hispanic")) {
+          s.append("HISPANIC OR LATINO");
+        } else {
+          s.append("NOT HISPANIC OR LATINO");
+        }
+        s.append(NEWLINE);
+        write(s.toString(), patientethnicity);
+      }
     }
-    s.append(NEWLINE);
-    write(s.toString(), patientethnicity);
 
     return personID;
   }
@@ -1617,7 +1652,7 @@ public class CDWExporter {
       return sids.computeIfAbsent(table, k -> new AtomicInteger(sidStart)).getAndIncrement();
     }
   }
-  
+
   /**
    * Replaces commas and line breaks in the source string with a single space.
    * Null is replaced with the empty string.

@@ -477,7 +477,7 @@ public class FhirR4 {
           ethnicityDisplay = "Hispanic or Latino";
         } else {
           ethnicity = "nonhispanic";
-          ethnicityDisplay = "Not Hispanic or Latino";
+          ethnicityDisplay = "Non Hispanic or Latino";
         }
 
         String ethnicityNum = (String) raceEthnicityCodes.get(ethnicity);

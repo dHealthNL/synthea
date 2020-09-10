@@ -46,6 +46,9 @@ public class CPCDSExporter {
   private static final String[] PLAN_NAMES = { "Bronze", "Silver", "Gold" };
   private static final String[] PLAN_IDS = { "00000001", "00000002", "00000003" };
 
+  /**
+   * This variable will enable or disable the output of claims data for the patient
+   */
   protected static boolean EXPORT_CLAIMS =
       Boolean.parseBoolean(Config.get("exporter.claims"));
 

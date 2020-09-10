@@ -146,6 +146,18 @@ public class FhirDstu2 {
 
   private static final String COUNTRY_CODE = Config.get("generate.geography.country_code");
 
+  /**
+   * This variable will enable or disable the output of the patient race information
+   */
+  private static final boolean EXPORT_RACE =
+      Boolean.parseBoolean(Config.get("exporter.race"));
+
+  /**
+   * This variable will enable or disable the output of the patient ethnicity information
+   */
+  private static final boolean EXPORT_ETHNICITY =
+      Boolean.parseBoolean(Config.get("exporter.ethnicity"));
+
   @SuppressWarnings("rawtypes")
   private static Map loadRaceEthnicityCodes() {
     String filename = "race_ethnicity_codes.json";
@@ -307,55 +319,60 @@ public class FhirDstu2 {
           .setValue((String) person.attributes.get(Person.IDENTIFIER_DRIVERS));
     }
 
-    ExtensionDt raceExtension = new ExtensionDt();
-    raceExtension.setUrl("http://hl7.org/fhir/StructureDefinition/us-core-race");
-    String race = (String) person.attributes.get(Person.RACE);
+    if (EXPORT_RACE) {
+      ExtensionDt raceExtension = new ExtensionDt();
+      raceExtension.setUrl("http://hl7.org/fhir/StructureDefinition/us-core-race");
+      String race = (String) person.attributes.get(Person.RACE);
 
-    ExtensionDt ethnicityExtension = new ExtensionDt();
-    ethnicityExtension.setUrl("http://hl7.org/fhir/StructureDefinition/us-core-ethnicity");
-    String ethnicity = (String) person.attributes.get(Person.ETHNICITY);
+      String raceDisplay;
+      switch (race) {
+        case "white":
+          raceDisplay = "White";
+          break;
+        case "black":
+          raceDisplay = "Black or African American";
+          break;
+        case "asian":
+          raceDisplay = "Asian";
+          break;
+        case "native":
+          raceDisplay = "American Indian or Alaska Native";
+          break;
+        default: // Other (Put Hawaiian and Pacific Islander here for now)
+          raceDisplay = "Other";
+          break;
+      }
 
-    String raceDisplay;
-    switch (race) {
-      case "white":
-        raceDisplay = "White";
-        break;
-      case "black":
-        raceDisplay = "Black or African American";
-        break;
-      case "asian":
-        raceDisplay = "Asian";
-        break;
-      case "native":
-        raceDisplay = "American Indian or Alaska Native";
-        break;
-      default: // Other (Put Hawaiian and Pacific Islander here for now)
-        raceDisplay = "Other";
-        break;
-    }
-
-    String ethnicityDisplay;
-    if (ethnicity.equals("hispanic")) {
-      ethnicityDisplay = "Hispanic or Latino";
-    } else {
-      ethnicityDisplay = "Not Hispanic or Latino";
-    }
-
-    Code raceCode = new Code(
+      Code raceCode = new Code(
         "http://hl7.org/fhir/v3/Race",
         (String) raceEthnicityCodes.get(race),
         raceDisplay);
 
-    Code ethnicityCode = new Code(
-        "http://hl7.org/fhir/v3/Ethnicity",
-        (String) raceEthnicityCodes.get(ethnicity),
-        ethnicityDisplay);
+        raceExtension.setValue(mapCodeToCodeableConcept(raceCode, "http://hl7.org/fhir/v3/Race"));
+        patientResource.addUndeclaredExtension(raceExtension);
 
-    raceExtension.setValue(mapCodeToCodeableConcept(raceCode, "http://hl7.org/fhir/v3/Race"));
-    ethnicityExtension.setValue(mapCodeToCodeableConcept(ethnicityCode, "http://hl7.org/fhir/v3/Ethnicity"));
+    }
 
-    patientResource.addUndeclaredExtension(raceExtension);
-    patientResource.addUndeclaredExtension(ethnicityExtension);
+    if (EXPORT_ETHNICITY) {
+      ExtensionDt ethnicityExtension = new ExtensionDt();
+      ethnicityExtension.setUrl("http://hl7.org/fhir/StructureDefinition/us-core-ethnicity");
+      String ethnicity = (String) person.attributes.get(Person.ETHNICITY);
+
+      String ethnicityDisplay;
+      if (ethnicity.equals("hispanic")) {
+        ethnicityDisplay = "Hispanic or Latino";
+      } else {
+        ethnicityDisplay = "Not Hispanic or Latino";
+      }
+
+      Code ethnicityCode = new Code(
+          "http://hl7.org/fhir/v3/Ethnicity",
+          (String) raceEthnicityCodes.get(ethnicity),
+          ethnicityDisplay);
+
+      ethnicityExtension.setValue(mapCodeToCodeableConcept(ethnicityCode, "http://hl7.org/fhir/v3/Ethnicity"));
+      patientResource.addUndeclaredExtension(ethnicityExtension);
+    }
 
     String firstLanguage = (String) person.attributes.get(Person.FIRST_LANGUAGE);
     Map languageMap = (Map) languageLookup.get(firstLanguage);

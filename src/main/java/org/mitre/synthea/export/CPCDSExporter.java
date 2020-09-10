@@ -80,6 +80,18 @@ public class CPCDSExporter {
   private static final String NEWLINE = System.lineSeparator();
 
   /**
+   * This variable will enable or disable the output of the patient race information
+   */
+  private static final boolean EXPORT_RACE =
+      Boolean.parseBoolean(Config.get("exporter.race"));
+
+  /**
+   * This variable will enable or disable the output of the patient ethnicity information
+   */
+  private static final boolean EXPORT_ETHNICITY =
+      Boolean.parseBoolean(Config.get("exporter.ethnicity"));
+
+  /**
    * Trackers for Practitioner and Hospital outputs.
    */
   public ArrayList<String> exportedPractitioners = new ArrayList<String>();
@@ -143,7 +155,9 @@ public class CPCDSExporter {
         .write("Member id,Date of birth,Date of death,Home_County,Home_State,Home_Country,"
                 + "Home_Zip code,Bill_County,Bill_State,Bill_Country,Bill_Zip code,"
                 + "Work_County,Work_State,Work_Country,Work_Zip code,"
-                + "Race code,Ethnicity,Gender code,Birth sex,Name");
+                + (EXPORT_RACE ? "Race code," : "")
+                + (EXPORT_ETHNICITY ? "Ethnicity," : "")
+                + "Gender code,Birth sex,Name");
     patients.write(NEWLINE);
 
     coverages
@@ -327,6 +341,14 @@ public class CPCDSExporter {
     String[] attributes = { Person.RACE, Person.ETHNICITY, Person.GENDER,
       Person.GENDER, Person.NAME };
     for (String attribute : attributes) {
+      // Skip race field when race export is disabled
+      if (!EXPORT_RACE && Person.RACE == attribute) {
+        continue;
+      }
+      // Skip ethnicity field when ethnicity export is disabled
+      if (!EXPORT_ETHNICITY && Person.ETHNICITY == attribute) {
+        continue;
+      }
       String value = (String) person.attributes.getOrDefault(attribute, "");
       s.append(',').append(clean(value));
     }

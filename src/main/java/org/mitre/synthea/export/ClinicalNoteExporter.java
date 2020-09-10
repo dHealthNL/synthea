@@ -8,6 +8,7 @@ import java.io.StringWriter;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.mitre.synthea.helpers.Config;
 import org.mitre.synthea.modules.LifecycleModule;
 import org.mitre.synthea.world.agents.Payer;
 import org.mitre.synthea.world.agents.Person;
@@ -23,6 +24,18 @@ import org.mitre.synthea.world.concepts.RaceAndEthnicity;
 public class ClinicalNoteExporter {
 
   private static final Configuration TEMPLATES = templateConfiguration();
+
+  /**
+   * This variable will enable or disable the output of the patient race information
+   */
+  private static final boolean EXPORT_RACE =
+      Boolean.parseBoolean(Config.get("exporter.race"));
+
+  /**
+   * This variable will enable or disable the output of the patient ethnicity information
+   */
+  private static final boolean EXPORT_ETHNICITY =
+      Boolean.parseBoolean(Config.get("exporter.ethnicity"));
 
   private static Configuration templateConfiguration() {
     Configuration configuration = new Configuration(Configuration.VERSION_2_3_26);
@@ -130,8 +143,8 @@ public class ClinicalNoteExporter {
     person.attributes.put("ehr_imaging_studies", encounter.imagingStudies);
     person.attributes.put("time", encounter.start);
     if (person.attributes.containsKey(LifecycleModule.QUIT_SMOKING_AGE)) {
-      person.attributes.put("quit_smoking_age", 
-          person.attributes.get(LifecycleModule.QUIT_SMOKING_AGE));      
+      person.attributes.put("quit_smoking_age",
+          person.attributes.get(LifecycleModule.QUIT_SMOKING_AGE));
     }
     person.attributes.put("race_lookup", RaceAndEthnicity.LOOK_UP_CDC_RACE);
     person.attributes.put("ethnicity_lookup", RaceAndEthnicity.LOOK_UP_CDC_ETHNICITY_CODE);
@@ -141,6 +154,7 @@ public class ClinicalNoteExporter {
     StringWriter writer = new StringWriter();
     try {
       Template template = TEMPLATES.getTemplate("note.ftl");
+      // TODO: Clear the template elements raceCode and ethnicGroupCode if they are disabled. Need more time to figure out the Freemaker Template engine
       template.process(person.attributes, writer);
     } catch (Exception e) {
       e.printStackTrace();

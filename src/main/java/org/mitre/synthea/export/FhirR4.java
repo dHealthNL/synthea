@@ -179,6 +179,18 @@ public class FhirR4 {
   protected static boolean EXPORT_CLAIMS =
       Boolean.parseBoolean(Config.get("exporter.claims"));
 
+  /**
+   * This variable will enable or disable the output of the patient race information
+   */
+  private static final boolean EXPORT_RACE =
+      Boolean.parseBoolean(Config.get("exporter.race"));
+
+  /**
+   * This variable will enable or disable the output of the patient ethnicity information
+   */
+  private static final boolean EXPORT_ETHNICITY =
+      Boolean.parseBoolean(Config.get("exporter.ethnicity"));
+
   private static final String COUNTRY_CODE = Config.get("generate.geography.country_code");
 
   private static final Table<String, String, String> SHR_MAPPING =
@@ -402,80 +414,84 @@ public class FhirR4 {
           .setValue((String) person.attributes.get(Person.IDENTIFIER_PASSPORT));
     }
 
-    if (USE_US_CORE_IG) {
-      // We do not yet account for mixed race
-      Extension raceExtension = new Extension(
-          "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race");
-      String race = (String) person.attributes.get(Person.RACE);
+    if (USE_US_CORE_IG && (EXPORT_RACE || EXPORT_ETHNICITY)) {
+      if (EXPORT_RACE) {
+        // We do not yet account for mixed race
+        Extension raceExtension = new Extension(
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race");
+        String race = (String) person.attributes.get(Person.RACE);
 
-      String raceDisplay;
-      switch (race) {
-        case "white":
-          raceDisplay = "White";
-          break;
-        case "black":
-          raceDisplay = "Black or African American";
-          break;
-        case "asian":
-          raceDisplay = "Asian";
-          break;
-        case "native":
-          raceDisplay = "American Indian or Alaska Native";
-          break;
-        default: // Other (Put Hawaiian and Pacific Islander here for now)
-          raceDisplay = "Other";
-          break;
+        String raceDisplay;
+        switch (race) {
+          case "white":
+            raceDisplay = "White";
+            break;
+          case "black":
+            raceDisplay = "Black or African American";
+            break;
+          case "asian":
+            raceDisplay = "Asian";
+            break;
+          case "native":
+            raceDisplay = "American Indian or Alaska Native";
+            break;
+          default: // Other (Put Hawaiian and Pacific Islander here for now)
+            raceDisplay = "Other";
+            break;
+        }
+
+        String raceNum = (String) raceEthnicityCodes.get(race);
+
+        Extension raceCodingExtension = new Extension("ombCategory");
+        Coding raceCoding = new Coding();
+        if (raceDisplay.equals("Other")) {
+          raceCoding.setSystem("http://terminology.hl7.org/CodeSystem/v3-NullFlavor");
+          raceCoding.setCode("UNK");
+          raceCoding.setDisplay("Unknown");
+        } else {
+          raceCoding.setSystem("urn:oid:2.16.840.1.113883.6.238");
+          raceCoding.setCode(raceNum);
+          raceCoding.setDisplay(raceDisplay);
+        }
+        raceCodingExtension.setValue(raceCoding);
+        raceExtension.addExtension(raceCodingExtension);
+
+        Extension raceTextExtension = new Extension("text");
+        raceTextExtension.setValue(new StringType(raceDisplay));
+        raceExtension.addExtension(raceTextExtension);
+        patientResource.addExtension(raceExtension);
       }
 
-      String raceNum = (String) raceEthnicityCodes.get(race);
+      if (EXPORT_ETHNICITY) {
+        // We do not yet account for mixed ethnicity
+        Extension ethnicityExtension = new Extension(
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity");
+        String ethnicity = (String) person.attributes.get(Person.ETHNICITY);
 
-      Extension raceCodingExtension = new Extension("ombCategory");
-      Coding raceCoding = new Coding();
-      if (raceDisplay.equals("Other")) {
-        raceCoding.setSystem("http://terminology.hl7.org/CodeSystem/v3-NullFlavor");
-        raceCoding.setCode("UNK");
-        raceCoding.setDisplay("Unknown");
-      } else {
-        raceCoding.setSystem("urn:oid:2.16.840.1.113883.6.238");
-        raceCoding.setCode(raceNum);
-        raceCoding.setDisplay(raceDisplay);
+        String ethnicityDisplay;
+        if (ethnicity.equals("hispanic")) {
+          ethnicity = "hispanic";
+          ethnicityDisplay = "Hispanic or Latino";
+        } else {
+          ethnicity = "nonhispanic";
+          ethnicityDisplay = "Not Hispanic or Latino";
+        }
+
+        String ethnicityNum = (String) raceEthnicityCodes.get(ethnicity);
+
+        Extension ethnicityCodingExtension = new Extension("ombCategory");
+        Coding ethnicityCoding = new Coding();
+        ethnicityCoding.setSystem("urn:oid:2.16.840.1.113883.6.238");
+        ethnicityCoding.setCode(ethnicityNum);
+        ethnicityCoding.setDisplay(ethnicityDisplay);
+        ethnicityCodingExtension.setValue(ethnicityCoding);
+
+        ethnicityExtension.addExtension(ethnicityCodingExtension);
+        Extension ethnicityTextExtension = new Extension("text");
+        ethnicityTextExtension.setValue(new StringType(ethnicityDisplay));
+        ethnicityExtension.addExtension(ethnicityTextExtension);
+        patientResource.addExtension(ethnicityExtension);
       }
-      raceCodingExtension.setValue(raceCoding);
-      raceExtension.addExtension(raceCodingExtension);
-
-      Extension raceTextExtension = new Extension("text");
-      raceTextExtension.setValue(new StringType(raceDisplay));
-      raceExtension.addExtension(raceTextExtension);
-      patientResource.addExtension(raceExtension);
-
-      // We do not yet account for mixed ethnicity
-      Extension ethnicityExtension = new Extension(
-          "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity");
-      String ethnicity = (String) person.attributes.get(Person.ETHNICITY);
-
-      String ethnicityDisplay;
-      if (ethnicity.equals("hispanic")) {
-        ethnicity = "hispanic";
-        ethnicityDisplay = "Hispanic or Latino";
-      } else {
-        ethnicity = "nonhispanic";
-        ethnicityDisplay = "Not Hispanic or Latino";
-      }
-
-      String ethnicityNum = (String) raceEthnicityCodes.get(ethnicity);
-
-      Extension ethnicityCodingExtension = new Extension("ombCategory");
-      Coding ethnicityCoding = new Coding();
-      ethnicityCoding.setSystem("urn:oid:2.16.840.1.113883.6.238");
-      ethnicityCoding.setCode(ethnicityNum);
-      ethnicityCoding.setDisplay(ethnicityDisplay);
-      ethnicityCodingExtension.setValue(ethnicityCoding);
-
-      ethnicityExtension.addExtension(ethnicityCodingExtension);
-      Extension ethnicityTextExtension = new Extension("text");
-      ethnicityTextExtension.setValue(new StringType(ethnicityDisplay));
-      ethnicityExtension.addExtension(ethnicityTextExtension);
-      patientResource.addExtension(ethnicityExtension);
     }
 
     String firstLanguage = (String) person.attributes.get(Person.FIRST_LANGUAGE);

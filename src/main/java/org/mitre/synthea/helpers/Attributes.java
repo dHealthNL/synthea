@@ -49,6 +49,12 @@ import org.mitre.synthea.world.agents.Person;
  */
 public class Attributes {
 
+  /**
+   * This variable will enable or disable the cardio vascular module.
+   */
+  private static final boolean ENABLE_CARDIOVASCULARMODULE =
+      Boolean.parseBoolean(Config.get("modules.cardiovasculardisease.enabled"));
+
   public class Inventory {
     /** Key: Module Name, Values: State names that read this attribute. */
     public Map<String,Set<String>> read;
@@ -104,9 +110,6 @@ public class Attributes {
    * @param args unused
    * @throws Exception if any error occurs in reading the module files
    */
-
-  private static final boolean ENABLE_CARDIOVASCULARMODULE =
-    Boolean.parseBoolean(Config.get("modules.cardiovasculardisease.enabled"));
 
   public static void main(String[] args) throws Exception {
     System.out.println("Performing an inventory of attributes into `output/attributes.json`...");

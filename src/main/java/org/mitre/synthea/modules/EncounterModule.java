@@ -46,8 +46,11 @@ public final class EncounterModule extends Module {
       "Urgent care clinic (procedure)");
   // NOTE: if new codes are added, be sure to update getAllCodes below
 
+  /**
+   * This variable will enable or disable the cardio vascular module.
+   */
   private static final boolean ENABLE_CARDIOVASCULARMODULE =
-    Boolean.parseBoolean(Config.get("modules.cardiovasculardisease.enabled"));
+      Boolean.parseBoolean(Config.get("modules.cardiovasculardisease.enabled"));
 
   public EncounterModule() {
     this.name = "Encounter";

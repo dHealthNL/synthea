@@ -36,15 +36,19 @@ import org.mitre.synthea.world.concepts.HealthRecord.Code;
  * Format is "system,code,display".
  */
 public class Concepts {
+
+  /**
+   * This variable will enable or disable the cardio vascular module.
+   */
+  private static final boolean ENABLE_CARDIOVASCULARMODULE =
+      Boolean.parseBoolean(Config.get("modules.cardiovasculardisease.enabled"));
+
   /**
    * Generate an output file containing all clinical concepts used in Synthea.
    *
    * @param args unused
    * @throws Exception if any error occurs in reading the module files
    */
-
-  private static final boolean ENABLE_CARDIOVASCULARMODULE =
-    Boolean.parseBoolean(Config.get("modules.cardiovasculardisease.enabled"));
 
   public static void main(String[] args) throws Exception {
     System.out.println("Performing an inventory of concepts into `output/concepts.csv`...");
@@ -78,7 +82,7 @@ public class Concepts {
 
     if (Concepts.ENABLE_CARDIOVASCULARMODULE) {
       inventoryCodes(concepts, CardiovascularDiseaseModule.getAllCodes(),
-        CardiovascularDiseaseModule.class.getSimpleName());
+          CardiovascularDiseaseModule.class.getSimpleName());
     }
     inventoryCodes(concepts, DeathModule.getAllCodes(), DeathModule.class.getSimpleName());
     inventoryCodes(concepts, EncounterModule.getAllCodes(), EncounterModule.class.getSimpleName());

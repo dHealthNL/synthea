@@ -133,8 +133,8 @@ public class CSVExporter {
   private static final String NEWLINE = System.lineSeparator();
 
   /**
-   * This variable will enable or disable the output of claims data for the patient
-   * TODO: Not sure how this is working in this CSV. They are also called Total Costs
+   * This variable will enable or disable the output of claims data for the patient.
+   * TODO: Not sure how this is working in this CSV. They are also called Total Costs.
    */
   protected static boolean EXPORT_CLAIMS =
       Boolean.parseBoolean(Config.get("exporter.claims"));

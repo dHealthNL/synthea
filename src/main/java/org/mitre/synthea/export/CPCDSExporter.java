@@ -76,13 +76,13 @@ public class CPCDSExporter {
   private static final String NEWLINE = System.lineSeparator();
 
   /**
-   * This variable will enable or disable the output of the patient race information
+   * This variable will enable or disable the output of the patient race information.
    */
   private static final boolean EXPORT_RACE =
       Boolean.parseBoolean(Config.get("exporter.race"));
 
   /**
-   * This variable will enable or disable the output of the patient ethnicity information
+   * This variable will enable or disable the output of the patient ethnicity information.
    */
   private static final boolean EXPORT_ETHNICITY =
       Boolean.parseBoolean(Config.get("exporter.ethnicity"));

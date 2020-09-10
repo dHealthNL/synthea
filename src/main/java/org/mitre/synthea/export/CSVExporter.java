@@ -23,8 +23,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.StringUtils;
 import org.mitre.synthea.helpers.Config;
-import org.mitre.synthea.helpers.RandomNumberGenerator;
 import org.mitre.synthea.helpers.RandomCodeGenerator;
+import org.mitre.synthea.helpers.RandomNumberGenerator;
 import org.mitre.synthea.helpers.Utilities;
 import org.mitre.synthea.modules.QualityOfLifeModule;
 import org.mitre.synthea.world.agents.Clinician;
@@ -132,9 +132,8 @@ public class CSVExporter {
    */
   private static final String NEWLINE = System.lineSeparator();
 
-    /**
+  /**
    * This variable will enable or disable the output of claims data for the patient
-   *
    * TODO: Not sure how this is working in this CSV. They are also called Total Costs
    */
   protected static boolean EXPORT_CLAIMS =

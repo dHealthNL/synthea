@@ -176,8 +176,9 @@ public class FhirR4 {
       Boolean.parseBoolean(Config.get("exporter.fhir.transaction_bundle"));
   protected static boolean USE_US_CORE_IG =
       Boolean.parseBoolean(Config.get("exporter.fhir.use_us_core_ig"));
+
   /**
-   * This variable will enable or disable the output of claims data for the patient
+   * This variable will enable or disable the output of claims data for the patient.
    */
   protected static boolean EXPORT_CLAIMS =
       Boolean.parseBoolean(Config.get("exporter.claims"));
@@ -2038,7 +2039,7 @@ public class FhirR4 {
     if (EXPORT_CLAIMS) {
       //create new claim for medication
       medicationClaim(person, personEntry, bundle, encounterEntry,
-        medication.claim, medicationEntry);
+          medication.claim, medicationEntry);
     }
 
     // Create new administration for medication, if needed

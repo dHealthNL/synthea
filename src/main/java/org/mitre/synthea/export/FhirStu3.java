@@ -157,8 +157,9 @@ public class FhirStu3 {
       Boolean.parseBoolean(Config.get("exporter.fhir.use_shr_extensions"));
   protected static boolean TRANSACTION_BUNDLE =
       Boolean.parseBoolean(Config.get("exporter.fhir.transaction_bundle"));
+
   /**
-   * This variable will enable or disable the output of claims data for the patient
+   * This variable will enable or disable the output of claims data for the patient.
    */
   protected static boolean EXPORT_CLAIMS =
       Boolean.parseBoolean(Config.get("exporter.claims"));
@@ -308,10 +309,10 @@ public class FhirStu3 {
       if (EXPORT_CLAIMS) {
         //one claim per encounter
         BundleEntryComponent encounterClaim = encounterClaim(person, personEntry, bundle,
-           encounterEntry, encounter.claim);
+            encounterEntry, encounter.claim);
 
         explanationOfBenefit(personEntry,bundle,encounterEntry,person,
-           encounterClaim, encounter);
+            encounterClaim, encounter);
       }
     }
     return bundle;

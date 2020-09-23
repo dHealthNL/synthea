@@ -79,18 +79,15 @@ public final class EncounterModule extends Module {
     Encounter encounter = null;
 
     // add a wellness encounter if this is the right time
-    if (person.record.timeSinceLastWellnessEncounter(time)
+    if (ENABLE_WELLNESS || !person.chronicMedications.isEmpty() && person.record.timeSinceLastWellnessEncounter(time)
         >= recommendedTimeBetweenWellnessVisits(person, time)) {
 
-      if (ENABLE_WELLNESS || !person.chronicMedications.isEmpty()) {
         Code code = getWellnessVisitCode(person, time);
         encounter = createEncounter(person, time, EncounterType.WELLNESS,
             ClinicianSpecialty.GENERAL_PRACTICE, code);
         encounter.name = "Encounter Module Scheduled Wellness";
         person.attributes.put(ACTIVE_WELLNESS_ENCOUNTER, true);
         startedEncounter = true;
-      }
-
     } else if (person.symptomTotal() > EMERGENCY_SYMPTOM_THRESHOLD) {
       if (!person.attributes.containsKey(LAST_VISIT_SYMPTOM_TOTAL)) {
         person.attributes.put(LAST_VISIT_SYMPTOM_TOTAL, 0);
